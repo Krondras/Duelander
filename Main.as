@@ -12,18 +12,21 @@
 		public var player:Player;
 		public var playerType:String;
 		
+		public var enemy:Enemy;
+		public var enemyType:String;
+		
 		public var keys:Object = new Object(); //Creates an object called keys that will be used to read what keys are being pressed.
 		
 		public var mainStage:Stage;
 		
 		public var gameTimer:Timer = new Timer(25);
 		public var playerActionTimer:Timer = new Timer(100);
+		public var enemyActionTimer:Timer = new Timer(100);
 		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
 		public var playerAttack:Boolean;//isAttacking 
 		public var enemyWasHit:Boolean;//hit the enemy
-		
 		
 		public function Main() 
 		{
@@ -33,12 +36,17 @@
 			playerType = "Samurai";
 			
 			player = new Samurai();
+			enemy = new Enemy(new DuelistIcon());
 			
 			stage.addChild(player);
 			stage.addChild(player.playerIcon);	
 			
+			stage.addChild(enemy);
+			stage.addChild(enemy.enemyIcon);	
+			
 			gameTimer.start();
 			playerActionTimer.start();
+			enemyActionTimer.start();
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
@@ -58,7 +66,7 @@
 			{
 				player.playerIcon.stop();
 				player.playerAttack = false;
-				//wasHit = false;
+				enemyWasHit = false;
 				player.playerActionTimer.start();
 			}
 			
@@ -67,6 +75,57 @@
 				player.playerIcon.stop();
 				player.playerBlock = false;
 				player.playerActionTimer.start();
+			}
+			
+			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
+			{
+				//numHits++;
+				enemyWasHit = true;
+				//remove this later and put in enemyClass
+				stage.removeChild(enemy.enemyIcon);
+				stage.removeChild(enemy);
+				enemy.enemyIcon.x = -200;
+				enemy.enemyIcon.y = -200;
+			}
+			
+			// && enemyWasHit != true
+			if(player.playerBlock && player.playerIcon.currentFrame == 10)
+			{
+				player.playerIcon.stop();
+				player.playerBlock = false;
+				playerActionTimer.start();
+			}
+			if(playerAttack && player.playerIcon.currentFrame == 6)
+			{
+				player.playerIcon.stop();
+				playerAttack = false;
+				enemyWasHit = false;
+				playerActionTimer.start();
+			}
+			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemyWasHit != true) 
+			{
+				//numHits++;
+				enemyWasHit = true;
+				//remove this later and put in enemyClass
+				stage.removeChild(enemy.enemyIcon);
+				enemy.enemyIcon.x = -200;
+				enemy.enemyIcon.y = -200;
+			}
+			
+			if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && enemyWasHit != true)
+			{
+				if(player.playerBlock)
+				{
+					enemy.enemyIcon.gotoAndStop(6);
+					trace("Blocked");
+					//enemActionTimer.delay = 200;
+					
+				}
+				else
+				{
+					enemyWasHit = true;
+					//numHits++;
+				}
 			}
 		}
 		
