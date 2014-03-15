@@ -17,7 +17,7 @@
 		public var mainStage:Stage;
 		
 		public var gameTimer:Timer = new Timer(25);
-		public var playerAttackTimer:Timer = new Timer(100);
+		public var playerActionTimer:Timer = new Timer(100);
 		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
@@ -38,7 +38,7 @@
 			stage.addChild(player.playerIcon);	
 			
 			gameTimer.start();
-			playerAttackTimer.start();
+			playerActionTimer.start();
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
@@ -48,18 +48,25 @@
 		
 		public function update(e)
 		{
-			playerAttackTimer = player.playerAttackTimer;
+			playerActionTimer = player.playerActionTimer;
 			playerAttack = player.playerAttack;
 			player.Update(keys);
 			player.Attack(keys);
-			
+			player.Block(keys);
 			
 			if(player.playerAttack && player.playerIcon.currentFrame == 6)
 			{
 				player.playerIcon.stop();
 				player.playerAttack = false;
 				//wasHit = false;
-				player.playerAttackTimer.start();
+				player.playerActionTimer.start();
+			}
+			
+			if(player.playerBlock && player.playerIcon.currentFrame == 10)
+			{
+				player.playerIcon.stop();
+				player.playerBlock = false;
+				player.playerActionTimer.start();
 			}
 		}
 		
