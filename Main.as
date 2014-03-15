@@ -10,23 +10,35 @@
 	{
 
 		public var player:Player;
+		public var playerType:String;
+		
 		public var keys:Object = new Object(); //Creates an object called keys that will be used to read what keys are being pressed.
+		
 		public var mainStage:Stage;
-		public var gameTimer:Timer;
+		
+		public var gameTimer:Timer = new Timer(25);
+		public var playerAttackTimer:Timer = new Timer(100);
+		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
+		public var playerAttack:Boolean;//isAttacking 
+		public var enemyWasHit:Boolean;//hit the enemy
+		
 		
 		public function Main() 
 		{
 			isPaused = false;
 			isMuted = false;
+			enemyWasHit = false;
+			playerType = "Samurai";
 			
 			player = new Samurai();
 			
 			stage.addChild(player);
+			stage.addChild(player.playerIcon);	
 			
-			gameTimer = new Timer( 25 );
 			gameTimer.start();
+			playerAttackTimer.start();
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
@@ -36,7 +48,19 @@
 		
 		public function update(e)
 		{
+			playerAttackTimer = player.playerAttackTimer;
+			playerAttack = player.playerAttack;
 			player.Update(keys);
+			player.Attack(keys);
+			
+			
+			if(player.playerAttack && player.playerIcon.currentFrame == 6)
+			{
+				player.playerIcon.stop();
+				player.playerAttack = false;
+				//wasHit = false;
+				player.playerAttackTimer.start();
+			}
 		}
 		
 		public function keyDown(e) // Activates when a key is pressed down
@@ -75,24 +99,28 @@
 		
 		public function changeCharacter(e)
 		{
+			stage.removeChild(player.playerIcon);
 			stage.removeChild(player);
 				
 			if (player.playerType == "Samurai")
 			{
 				player = new Duelist();
 				stage.addChild(player);
+				stage.addChild(player.playerIcon);
 			}
 				
 			else if (player.playerType == "Duelist")
 			{
 				player = new Knight();
 				stage.addChild(player);
+				stage.addChild(player.playerIcon);
 			}
 				
 			else
 			{
 				player = new Samurai();
 				stage.addChild(player);
+				stage.addChild(player.playerIcon);
 			}
 		}
 	}
