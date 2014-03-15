@@ -6,7 +6,8 @@
 	import flash.text.*;
 	import flash.media.*;
 	
-	public class Main extends MovieClip {
+	public class Main extends MovieClip 
+	{
 
 		public var player:Player;
 		public var keys:Object = new Object(); //Creates an object called keys that will be used to read what keys are being pressed.
@@ -20,7 +21,7 @@
 			isPaused = false;
 			isMuted = false;
 			
-			player = new Knight();
+			player = new Samurai();
 			
 			stage.addChild(player);
 			
@@ -30,6 +31,7 @@
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
+			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
 		}
 		
 		public function update(e)
@@ -70,7 +72,29 @@
 		{
 			keys[e.keyCode] = false; //Sets the value of key to two things--the keycode of the key being released, and the value "false".
 		}
-
+		
+		public function changeCharacter(e)
+		{
+			stage.removeChild(player);
+				
+			if (player.playerType == "Samurai")
+			{
+				player = new Duelist();
+				stage.addChild(player);
+			}
+				
+			else if (player.playerType == "Duelist")
+			{
+				player = new Knight();
+				stage.addChild(player);
+			}
+				
+			else
+			{
+				player = new Samurai();
+				stage.addChild(player);
+			}
+		}
 	}
 	
 }
