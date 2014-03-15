@@ -1,18 +1,18 @@
 ﻿package  {
 	import flash.display.*;
-	
-	
-	public class AlexPlayer extends MovieClip{
-		
+	public class AlexEnemy extends MovieClip{
 		public var playIcon:MovieClip = new MovieClip();
 		public var isBlocking:Boolean;
-		public function AlexPlayer(tempIcon:MovieClip) {
+		public var enemAttack:Boolean;
+		
+		public function AlexEnemy(tempIcon:MovieClip) {
 			// constructor code
 			playIcon = tempIcon;
-			playIcon.x = 0;
+			playIcon.x = 70;
 			playIcon.y = 300;
 			playIcon.stop();
 			isBlocking = false;
+			enemAttack = false;
 		}
 
 	}
