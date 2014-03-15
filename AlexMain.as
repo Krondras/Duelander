@@ -5,6 +5,8 @@
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.events.*;
+	import flash.utils.Timer;
+
 	public class AlexMain extends MovieClip {
 		
 		public var PlayType:String = new String();
@@ -22,11 +24,14 @@
 		public var numHits:int;
 		
 		var PlayerObject;
-		var playAttack:Boolean;
-		var wasHit:Boolean;
+		var playAttack:Boolean;//isAttacking 
+		var wasHit:Boolean;//hit the enemy
+		var playAttackTimer:Timer = new Timer(100);
+		
 		
 		public function AlexMain() {
 			// constructor code
+			playAttackTimer.start();
 			playAttack = false;
 			wasHit = false;
 			PlayType = "Samurai";
@@ -46,7 +51,7 @@
 			if(EnemType == "Samurai")
 			{
 				EnemIconTemp = new enem();
-				EnemIconTemp.x = 50;
+				EnemIconTemp.x = 52;
 				EnemIconTemp.y = 300;
 			}
 			
@@ -63,16 +68,27 @@
 			testTextBox.text = "Number of Hits ";
 			testTextBox.appendText(numHits.toString());
 			stage.addChild(testTextBox);
+			trace(playAttackTimer.currentCount);
+			//if(playAttackTimer.currentCount % 5 == 0)
+			//{
+				
+			//}
 			for(var key in Buttons)
 			{
 				//if the key location is true
 				if(Buttons[key])
 				{
 					trace(key);
-					if(key == 32)
+					
+					//spaceBar
+					if(key == 32 && playAttack != true && playAttackTimer.currentCount  >= 5)
 					{
 						PlayerAttack();
 	
+					}
+					if(key == 16)
+					{
+						//PlayerBlock();
 					}
 				}
 			}
@@ -81,11 +97,16 @@
 				PlayerObject.playIcon.stop();
 				playAttack = false;
 				wasHit = false;
+				playAttackTimer.start();
 			}
 			if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemIconTemp) && wasHit != true) 
 			{
 				numHits++;
 				wasHit = true;
+				//remove this later and put in enemyClass
+				stage.removeChild(EnemIconTemp);
+				EnemIconTemp.x = -200;
+				EnemIconTemp.y = -200;
 			}
 		}
 		
@@ -106,6 +127,7 @@
 		{
 			playAttack = true;
 			PlayerObject.playIcon.gotoAndPlay(2);
+			playAttackTimer.reset();
 			
 		}
 		public function EnemyAttack()
