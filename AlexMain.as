@@ -26,12 +26,19 @@
 		var PlayerObject;
 		var playAttack:Boolean;//isAttacking 
 		var wasHit:Boolean;//hit the enemy
-		var playAttackTimer:Timer = new Timer(100);
+		var playActionTimer:Timer = new Timer(100);
 		
+		var EnemyObject;
+		var enemActionTimer:Timer = new Timer(100);
+		
+		//var enemAttack:Boolean;
 		
 		public function AlexMain() {
 			// constructor code
-			playAttackTimer.start();
+			playActionTimer.start();
+			enemActionTimer.start();
+			
+			
 			playAttack = false;
 			wasHit = false;
 			PlayType = "Samurai";
@@ -51,8 +58,8 @@
 			if(EnemType == "Samurai")
 			{
 				EnemIconTemp = new enem();
-				EnemIconTemp.x = 52;
-				EnemIconTemp.y = 300;
+				//EnemIconTemp.x = 52;
+				//EnemIconTemp.y = 300;
 			}
 			
 			if(PlayType == "Samurai")
@@ -61,14 +68,15 @@
 			}
 			PlayerObject = new AlexPlayer(playerIconTemp);
 			stage.addChild(PlayerObject.playIcon);
-			stage.addChild(EnemIconTemp);
+			EnemyObject = new AlexEnemy(EnemIconTemp);
+			stage.addChild(EnemyObject.playIcon);
 		}
 		public function Update(e)
 		{
 			testTextBox.text = "Number of Hits ";
 			testTextBox.appendText(numHits.toString());
 			stage.addChild(testTextBox);
-			trace(playAttackTimer.currentCount);
+			trace(enemActionTimer.currentCount);
 			//if(playAttackTimer.currentCount % 5 == 0)
 			//{
 				
@@ -81,27 +89,61 @@
 					trace(key);
 					
 					//spaceBar
-					if(key == 32 && playAttack != true && playAttackTimer.currentCount  >= 5)
+					if(key == 32 && playAttack != true && PlayerObject.isBlocking != true && playActionTimer.currentCount  >= 5)
 					{
 						PlayerAttack();
 	
 					}
-					if(key == 16)
+					if(key == 16 && playAttack != true && PlayerObject.isBlocking != true && playActionTimer.currentCount >= 5)
 					{
-						//PlayerBlock();
+						PlayerBlock();
 					}
 				}
+			}
+			if(enemActionTimer.currentCount >= 10)
+			{
+				EnemyAttack();
+			}
+			if(EnemyObject.playIcon.currentFrame == 6)
+			{
+				EnemyObject.playIcon.stop();
+				EnemyObject.enemAttack = false;
+				wasHit = false;
+				//enemActionTimer= new Timer(100);
+				enemActionTimer.start();
+			}
+			if(EnemyObject.enemAttack && EnemyObject.playIcon.sword2.hitTestObject(PlayerObject.playIcon) && wasHit != true)
+			{
+				if(PlayerObject.isBlocking)
+				{
+					EnemyObject.playIcon.gotoAndStop(6);
+					trace("Blocked");
+					//enemActionTimer.delay = 200;
+					
+				}
+				else
+				{
+					wasHit = true;
+					numHits++;
+					
+				}
+			}// && wasHit != true
+			if(PlayerObject.isBlocking && PlayerObject.playIcon.currentFrame == 10)
+			{
+				PlayerObject.playIcon.stop();
+				PlayerObject.isBlocking = false;
+				playActionTimer.start();
 			}
 			if(playAttack && PlayerObject.playIcon.currentFrame == 6)
 			{
 				PlayerObject.playIcon.stop();
 				playAttack = false;
 				wasHit = false;
-				playAttackTimer.start();
+				playActionTimer.start();
 			}
-			if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemIconTemp) && wasHit != true) 
+			if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemyObject.playIcon) && wasHit != true) 
 			{
-				numHits++;
+				//numHits++;
 				wasHit = true;
 				//remove this later and put in enemyClass
 				stage.removeChild(EnemIconTemp);
@@ -127,11 +169,20 @@
 		{
 			playAttack = true;
 			PlayerObject.playIcon.gotoAndPlay(2);
-			playAttackTimer.reset();
+			playActionTimer.reset();
 			
 		}
 		public function EnemyAttack()
 		{
+			EnemyObject.enemAttack = true;
+			EnemyObject.playIcon.gotoAndPlay(2);
+			enemActionTimer.reset();
+		}
+		public function PlayerBlock()
+		{
+			PlayerObject.isBlocking = true;
+			PlayerObject.playIcon.gotoAndPlay(7);
+			playActionTimer.reset();
 			
 		}
 		
