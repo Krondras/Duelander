@@ -71,7 +71,7 @@
 					if(currentKeys == 32 && playerAttack != true && playerAttackTimer.currentCount  >= 5)
 					{
 						playerAttack = true;
-						playerIcon.gotoAndPlay(2);
+						playerIcon.gotoAndPlay(1);
 						playerAttackTimer.reset();
 					}
 				}
