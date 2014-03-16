@@ -77,17 +77,6 @@
 				player.playerActionTimer.start();
 			}
 			
-			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
-			{
-				//numHits++;
-				enemyWasHit = true;
-				//remove this later and put in enemyClass
-				stage.removeChild(enemy.enemyIcon);
-				stage.removeChild(enemy);
-				enemy.enemyIcon.x = -200;
-				enemy.enemyIcon.y = -200;
-			}
-			
 			// && enemyWasHit != true
 			if(player.playerBlock && player.playerIcon.currentFrame == 10)
 			{
@@ -102,17 +91,17 @@
 				enemyWasHit = false;
 				playerActionTimer.start();
 			}
-			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemyWasHit != true) 
+			
+			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
 			{
 				//numHits++;
 				enemyWasHit = true;
 				//remove this later and put in enemyClass
 				stage.removeChild(enemy.enemyIcon);
-				enemy.enemyIcon.x = -200;
-				enemy.enemyIcon.y = -200;
+				stage.removeChild(enemy);
 			}
 			
-			if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && enemyWasHit != true)
+			if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
 			{
 				if(player.playerBlock)
 				{

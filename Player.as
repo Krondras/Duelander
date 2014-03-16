@@ -45,8 +45,6 @@
 			{
 				Movement(keys);
 			}
-			
-			trace(movementTimer.currentCount % movementTimerInterval);
 		}
 		
 		public function Movement(keys:Object)
