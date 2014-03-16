@@ -13,6 +13,7 @@
 			enemyIcon = tempIcon;
 			enemyIcon.x = 380;
 			enemyIcon.y = 380;
+			enemyIcon.scaleX *= -1;
 			enemyIcon.stop();
 			isBlocking = false;
 			enemyAttack = false;

@@ -27,12 +27,15 @@
 		public var isMuted:Boolean;
 		public var playerAttack:Boolean;//isAttacking 
 		public var enemyWasHit:Boolean;//hit the enemy
+		public var enemyDead:Boolean;
 		
 		public function Main() 
 		{
 			isPaused = false;
 			isMuted = false;
 			enemyWasHit = false;
+			enemyDead = false;
+			
 			playerType = "Samurai";
 			
 			player = new Samurai();
@@ -92,13 +95,24 @@
 				playerActionTimer.start();
 			}
 			
-			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
+			if(enemy.enemyIcon.currentFrame == 6)
 			{
-				//numHits++;
-				enemyWasHit = true;
-				//remove this later and put in enemyClass
-				stage.removeChild(enemy.enemyIcon);
-				stage.removeChild(enemy);
+				enemy.enemyIcon.stop();
+				enemy.enemyAttack = false;
+				enemyWasHit = false;
+				enemyActionTimer.start();
+			}
+			
+			if (!enemyDead)
+			{
+				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
+				{
+					enemyWasHit = true;
+					enemyDead = true;
+					//remove this later and put in enemyClass
+					stage.removeChild(enemy.enemyIcon);
+					stage.removeChild(enemy);
+				}
 			}
 			
 			if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
@@ -116,6 +130,19 @@
 					//numHits++;
 				}
 			}
+			
+			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
+			{
+				player.playerIcon.x -= 50;
+				enemy.enemyIcon.x += 50;
+			}
+			
+			if(enemyActionTimer.currentCount >= 10)
+			{
+				EnemyAttack();
+			}
+			
+			
 		}
 		
 		public function keyDown(e) // Activates when a key is pressed down
@@ -178,6 +205,13 @@
 				stage.addChild(player.playerIcon);
 			}
 		}
+		
+		public function EnemyAttack()
+		{
+			enemy.enemyAttack = true;
+			enemy.enemyIcon.gotoAndPlay(2);
+			enemyActionTimer.reset();
+		}
+		
 	}
-	
 }
