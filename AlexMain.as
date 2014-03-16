@@ -141,14 +141,21 @@
 				wasHit = false;
 				playActionTimer.start();
 			}
-			if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemyObject.playIcon) && wasHit != true) 
+			if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemyObject.playIcon) && wasHit != true && EnemyObject.enemAttack != true) 
 			{
 				//numHits++;
 				wasHit = true;
 				//remove this later and put in enemyClass
-				stage.removeChild(EnemIconTemp);
-				EnemIconTemp.x = -200;
-				EnemIconTemp.y = -200;
+			//	stage.removeChild(EnemyObject.playIcon);
+				//EnemyObject.playIcon.x = -200;
+				//EnemyObject.playIcon.y = -200;
+				//EnemIconTemp.x = -200;
+				//EnemIconTemp.y = -200;
+			}
+			else if(playAttack && PlayerObject.playIcon.sword1.hitTestObject(EnemyObject.playIcon) && EnemyObject.enemAttack == true)
+			{
+				PlayerObject.playIcon.x -= 50;
+				EnemyObject.playIcon.x += 50;
 			}
 		}
 		

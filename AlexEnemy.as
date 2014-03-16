@@ -8,7 +8,7 @@
 		public function AlexEnemy(tempIcon:MovieClip) {
 			// constructor code
 			playIcon = tempIcon;
-			playIcon.x = 70;
+			playIcon.x = 130;
 			playIcon.y = 300;
 			playIcon.stop();
 			isBlocking = false;
