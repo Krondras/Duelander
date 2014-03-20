@@ -26,82 +26,94 @@
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
 		public var playerAttack:Boolean;//isAttacking 
+		
+		public var playerWasHit:Boolean;//hit the player
 		public var enemyWasHit:Boolean;//hit the enemy
+		
 		public var enemyDead:Boolean;
 		
-		public function Main() 
+		public var playStage:Stage;
+		
+		public function Main(parentStage:Stage) 
 		{
 			isPaused = false;
 			isMuted = false;
 			enemyWasHit = false;
 			enemyDead = false;
-			
+			playStage = parentStage;
 			playerType = "Samurai";
 			
 			player = new Samurai();
 			enemy = new Enemy(new DuelistIcon());
 			
-			stage.addChild(player);
-			stage.addChild(player.playerIcon);	
+			playStage.addChild(player);
+			playStage.addChild(player.playerIcon);	
 			
-			stage.addChild(enemy);
-			stage.addChild(enemy.enemyIcon);	
+			playStage.addChild(enemy);
+			playStage.addChild(enemy.enemyIcon);	
 			
 			gameTimer.start();
 			playerActionTimer.start();
 			enemyActionTimer.start();
 			
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
-			stage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
+			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
+			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
 		}
 		
 		public function update(e)
 		{
-			playerActionTimer = player.playerActionTimer;
-			playerAttack = player.playerAttack;
-			player.Update(keys);
-			player.Attack(keys);
-			player.Block(keys);
-			enemy.Update(player);
-			
-			if(player.playerAttack && player.playerIcon.currentFrame == 6)
+			if (!playerWasHit)
 			{
-				player.playerIcon.stop();
-				player.playerAttack = false;
-				enemyWasHit = false;
-				player.playerActionTimer.start();
+				playerActionTimer = player.playerActionTimer;
+				playerAttack = player.playerAttack;
+				player.Update(keys);
+				player.Attack(keys);
+				player.Block(keys);
 			}
 			
-			if(player.playerBlock && player.playerIcon.currentFrame == 10)
-			{
-				player.playerIcon.stop();
-				player.playerBlock = false;
-				player.playerActionTimer.start();
-			}
+			if (!enemyDead && !playerWasHit)
+				enemy.Update(player);
 			
-			// && enemyWasHit != true
-			if(player.playerBlock && player.playerIcon.currentFrame == 10)
+			if (!playerWasHit)
 			{
-				player.playerIcon.stop();
-				player.playerBlock = false;
-				playerActionTimer.start();
-			}
-			if(playerAttack && player.playerIcon.currentFrame == 6)
-			{
-				player.playerIcon.stop();
-				playerAttack = false;
-				enemyWasHit = false;
-				playerActionTimer.start();
-			}
-			
-			if(enemy.enemyIcon.currentFrame == 6)
-			{
-				enemy.enemyIcon.stop();
-				enemy.enemyAttack = false;
-				enemyWasHit = false;
-				enemyActionTimer.start();
+				if(player.playerAttack && player.playerIcon.currentFrame == 6)
+				{
+					player.playerIcon.stop();
+					player.playerAttack = false;
+					enemyWasHit = false;
+					player.playerActionTimer.start();
+				}
+				
+				if(player.playerBlock && player.playerIcon.currentFrame == 10)
+				{
+					player.playerIcon.stop();
+					player.playerBlock = false;
+					player.playerActionTimer.start();
+				}
+				
+				// && enemyWasHit != true
+				if(player.playerBlock && player.playerIcon.currentFrame == 10)
+				{
+					player.playerIcon.stop();
+					player.playerBlock = false;
+					playerActionTimer.start();
+				}
+				if(playerAttack && player.playerIcon.currentFrame == 6)
+				{
+					player.playerIcon.stop();
+					playerAttack = false;
+					enemyWasHit = false;
+					playerActionTimer.start();
+				}
+				
+				if(enemy.enemyIcon.currentFrame == 6)
+				{
+					enemy.enemyIcon.stop();
+					enemy.enemyAttack = false;
+					enemyWasHit = false;
+					enemyActionTimer.start();
+				}
 			}
 			
 			if (!enemyDead)
@@ -118,8 +130,8 @@
 						enemyWasHit = true;
 						enemyDead = true;
 						//remove this later and put in enemyClass
-						stage.removeChild(enemy.enemyIcon);
-						stage.removeChild(enemy);
+						playStage.removeChild(enemy.enemyIcon);
+						playStage.removeChild(enemy);
 					}
 					
 				}
@@ -136,10 +148,19 @@
 					}
 					else
 					{
-					
-						stage.removeChild(player.playerIcon);
-						stage.removeChild(player);
-						enemyWasHit = true;
+						gameTimer.stop();
+						playerActionTimer.stop();
+						enemyActionTimer.stop();
+						playStage.removeChild(player.playerIcon);
+						playStage.removeChild(player);
+						playStage.removeChild(enemy.enemyIcon);
+						playStage.removeChild(enemy);
+						playerWasHit = true;
+						playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+						playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+						dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
+						//playStage.addChild(gameOverScreen);
+						
 						//numHits++;
 					}
 				}
@@ -195,28 +216,28 @@
 		
 		public function changeCharacter(e)
 		{
-			stage.removeChild(player.playerIcon);
-			stage.removeChild(player);
+			playStage.removeChild(player.playerIcon);
+			playStage.removeChild(player);
 				
 			if (player.playerType == "Samurai")
 			{
 				player = new Duelist();
-				stage.addChild(player);
-				stage.addChild(player.playerIcon);
+				playStage.addChild(player);
+				playStage.addChild(player.playerIcon);
 			}
 				
 			else if (player.playerType == "Duelist")
 			{
 				player = new Knight();
-				stage.addChild(player);
-				stage.addChild(player.playerIcon);
+				playStage.addChild(player);
+				playStage.addChild(player.playerIcon);
 			}
 				
 			else
 			{
 				player = new Samurai();
-				stage.addChild(player);
-				stage.addChild(player.playerIcon);
+				playStage.addChild(player);
+				playStage.addChild(player.playerIcon);
 			}
 		}
 		
