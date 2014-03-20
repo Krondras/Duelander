@@ -64,6 +64,7 @@
 			player.Update(keys);
 			player.Attack(keys);
 			player.Block(keys);
+			enemy.Update(player);
 			
 			if(player.playerAttack && player.playerIcon.currentFrame == 6)
 			{
@@ -107,39 +108,52 @@
 			{
 				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
 				{
-					enemyWasHit = true;
-					enemyDead = true;
-					//remove this later and put in enemyClass
-					stage.removeChild(enemy.enemyIcon);
-					stage.removeChild(enemy);
-				}
-			}
-			
-			if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
-			{
-				if(player.playerBlock)
-				{
-					enemy.enemyIcon.gotoAndStop(6);
-					trace("Blocked");
-					//enemActionTimer.delay = 200;
+					if(enemy.isBlocking)
+					{
+						player.playerIcon.gotoAndStop(6);
+						trace("Attack was Blocked");
+					}
+					else
+					{
+						enemyWasHit = true;
+						enemyDead = true;
+						//remove this later and put in enemyClass
+						stage.removeChild(enemy.enemyIcon);
+						stage.removeChild(enemy);
+					}
 					
 				}
-				else
+			
+			
+				if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
 				{
-					enemyWasHit = true;
-					//numHits++;
+					if(player.playerBlock)
+					{
+						enemy.enemyIcon.gotoAndStop(6);
+						trace("Blocked");
+						//enemActionTimer.delay = 200;
+					
+					}
+					else
+					{
+					
+						stage.removeChild(player.playerIcon);
+						stage.removeChild(player);
+						enemyWasHit = true;
+						//numHits++;
+					}
 				}
-			}
 			
-			if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
-			{
-				player.playerIcon.x -= 50;
-				enemy.enemyIcon.x += 50;
-			}
+				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
+				{
+					player.playerIcon.x -= 50;
+					enemy.enemyIcon.x += 50;
+				}
 			
-			if(enemyActionTimer.currentCount >= 10)
-			{
-				EnemyAttack();
+				if(enemyActionTimer.currentCount >= 10)
+				{
+					EnemyAttack();
+				}
 			}
 			
 			
