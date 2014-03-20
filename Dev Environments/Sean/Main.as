@@ -58,12 +58,15 @@
 			
 			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
+			playStage.addEventListener(EnemyEvent.ENEMYDEAD, spawnNewEnemy);
+			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
+			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
 		}
 		
 		public function update(e)
 		{
-			if (!playerWasHit)
+			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
 				playerActionTimer = player.playerActionTimer;
 				playerAttack = player.playerAttack;
@@ -72,10 +75,10 @@
 				player.Block(keys);
 			}
 			
-			if (!enemyDead && !playerWasHit)
+			if (!enemyDead && !playerWasHit) //Updates the enemy if the player isn't dead.
 				enemy.Update(player);
 			
-			if (!playerWasHit)
+			if (!playerWasHit) //Checks if the player has been hit before updating animations
 			{
 				if(player.playerAttack && player.playerIcon.currentFrame == 6)
 				{
@@ -116,52 +119,47 @@
 				}
 			}
 			
-			if (!enemyDead)
+			if (!enemyDead) //Checks if the enemy is dead before checking hits.
 			{
 				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
 				{
 					if(enemy.isBlocking)
 					{
 						player.playerIcon.gotoAndStop(6);
-						trace("Attack was Blocked");
+						//trace("Attack was Blocked");
 					}
 					else
 					{
-						enemyWasHit = true;
 						enemyDead = true;
-						//remove this later and put in enemyClass
 						playStage.removeChild(enemy.enemyIcon);
 						playStage.removeChild(enemy);
+						
+						enemyDead = false;
+						
+						enemy = new Enemy(new DuelistIcon());
+						
+						playStage.addChild(enemy);
+						playStage.addChild(enemy.enemyIcon);	
+						//dispatchEvent(new EnemyEvent(EnemyEvent.ENEMYDEAD));
 					}
 					
 				}
 			
-			
+				
 				if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
 				{
 					if(player.playerBlock)
 					{
 						enemy.enemyIcon.gotoAndStop(6);
-						trace("Blocked");
+						//trace("Blocked");
 						//enemActionTimer.delay = 200;
 					
 					}
 					else
 					{
-						gameTimer.stop();
-						playerActionTimer.stop();
-						enemyActionTimer.stop();
-						playStage.removeChild(player.playerIcon);
-						playStage.removeChild(player);
-						playStage.removeChild(enemy.enemyIcon);
-						playStage.removeChild(enemy);
 						playerWasHit = true;
-						playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-						playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+						screenClear();
 						dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
-						//playStage.addChild(gameOverScreen);
-						
-						//numHits++;
 					}
 				}
 			
@@ -169,6 +167,7 @@
 				{
 					player.playerIcon.x -= 50;
 					enemy.enemyIcon.x += 50;
+					trace("repel");
 				}
 			
 				if(enemyActionTimer.currentCount >= 10)
@@ -246,6 +245,23 @@
 			enemy.enemyAttack = true;
 			enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
+		}
+		
+		public function spawnNewEnemy(enemyEvent:EnemyEvent ):void //Spawn a new enemy
+		{
+		}
+		
+		public function screenClear()
+		{
+			gameTimer.stop();
+			playerActionTimer.stop();
+			enemyActionTimer.stop();
+			playStage.removeChild(player.playerIcon);
+			playStage.removeChild(player);
+			playStage.removeChild(enemy.enemyIcon);
+			playStage.removeChild(enemy);
+			playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+			playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 		}
 		
 	}

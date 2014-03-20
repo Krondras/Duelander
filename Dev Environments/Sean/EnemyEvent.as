@@ -4,9 +4,9 @@
 	
 	public class EnemyEvent extends Event 
 	{
-		public static const ATTACK:String = "attacking";
-		public static const MOVE:String = "movement";
-		public static const DEAD:String = "dead";
+		public static const ENEMYATTACK:String = "enemy attacking";
+		public static const ENEMYMOVE:String = "enemy movement";
+		public static const ENEMYDEAD:String = "enemy dead";
 		
 		public function EnemyEvent( type:String )
 		{

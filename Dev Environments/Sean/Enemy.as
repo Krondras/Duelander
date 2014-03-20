@@ -38,14 +38,14 @@
 				{
 					isBlocking = false;
 					actionDelay = 48;
-					trace("Stopped Blocking");
+					//trace("Stopped Blocking");
 				}
 			
 				else if(canBlock != true)
 				{
 					canBlock = true;
 					actionDelay = 12;
-					trace("Can Now Block");
+					//trace("Can Now Block");
 				}
 			}	
 			if(isAdvancing)
@@ -93,7 +93,7 @@
 				{
 					canBlock = false;
 					actionDelay = 6;
-					trace("Failed to block")
+					//trace("Failed to block")
 				}
 				
 			}
