@@ -41,10 +41,13 @@
 		{
 			//When the movement timer has reached a value cleanly divisible by the movementTimer interval,
 			//run movement
-			if(movementTimer.currentCount % movementTimerInterval == 0)
-			{
+			
+			//if(movementTimer.currentCount % movementTimerInterval == 0)
+			//{
 				Movement(keys);
-			}
+				
+				
+			//}
 		}
 		
 		public function Movement(keys:Object)
@@ -53,11 +56,28 @@
 			{
 				if (keys[currentKeys])
 				{
+					
 					if(currentKeys == 37 && playerIcon.x - playerIcon.width/2 > 0)
-						playerIcon.x -= moveSpeed;
+					{
+						spriteUpdate();
+						if(movementTimer.currentCount % movementTimerInterval == 0)
+						{
+						
+							playerIcon.x -= moveSpeed;
+						//spriteUpdate();
+						}
+						
+					}
 						
 					if(currentKeys == 39 && playerIcon.x + playerIcon.width/2 < stage.stageWidth)
-						playerIcon.x += moveSpeed;
+					{
+						spriteUpdate();
+						if(movementTimer.currentCount % movementTimerInterval == 0)
+						{
+							playerIcon.x += moveSpeed;
+						//spriteUpdate();
+						}
+					}
 				}
 			}
 		}
@@ -91,6 +111,19 @@
 						playerActionTimer.reset();	
 					}
 				}
+			}
+		}
+		
+		//updates spritesheet for additional componenets when moved
+		public function spriteUpdate()
+		{
+			if(playerIcon.sheetSam.x <= -102)
+			{
+				playerIcon.sheetSam.x = -17;
+			}
+			else
+			{
+				playerIcon.sheetSam.x -= 43;
 			}
 		}
 		
