@@ -9,13 +9,14 @@
 	public class DocumentClass extends MovieClip 
 	{
 		public var titleScreen:TitleScreen; //container variable for the title screen
+		public var selectScreen:SelectScreen; //container for the character selection
 		public var playScreen:Main; //container variable for the play screen
 		public var gameOverScreen:GameOverScreen; //container variable for the game over screen.
- 
+ 		
 		public function DocumentClass() //Initializes the title screen when you first open the game.
 		{
 			titleScreen = new TitleScreen(); //creates the title screen
-			titleScreen.addEventListener( NavigationEvent.START, onRequestStart ); //adds a listener for the game to start (see TitleScreen.as)
+			titleScreen.addEventListener( NavigationEvent.CHARSELECT, onRequestCharSelect ); //adds a listener for the game to start (see TitleScreen.as)
 			addChild( titleScreen ); //Adds the title screen to the stage.
 		}
 		
@@ -27,13 +28,22 @@
 			playScreen = null; //removes the play screen.
 		}
 		
-		public function onRequestStart( navigationEvent:NavigationEvent ):void
+		public function onRequestCharSelect( navigationEvent:NavigationEvent ):void
 		{
-			playScreen = new Main(stage); //creates the gameplay screen
+			selectScreen = new SelectScreen(); //creates the gameplay screen
+			selectScreen.addEventListener( NavigationEvent.START, onRequestStart ); //adds a listener for the player to die 
+			addChild( selectScreen ); //adds the game over screen to the stage
+		 
+			titleScreen = null; //removes the title screen.
+		}
+		
+		public function onRequestStart( navigationEvent:NavigationEvent ):void
+		{ 
+			playScreen = new Main(stage, selectScreen.playerType); //creates the gameplay screen
 			playScreen.addEventListener( PlayerEvent.DEAD, onPlayerDeath ); //adds a listener for the player to die 
 			addChild( playScreen ); //adds the game over screen to the stage
 		 
-			titleScreen = null; //removes the title screen.
+			selectScreen = null; //removes the title screen.
 		}
 		
 		public function onRequestRestart( navigationEvent:NavigationEvent ):void
@@ -43,9 +53,9 @@
 		
 		public function restartGame():void //restarts the game
 		{
-			playScreen = new Main(stage); //creates a new play screen
-			playScreen.addEventListener( PlayerEvent.DEAD, onPlayerDeath );//waits for the player to die like before
-			addChild( playScreen );//adds the play screen back to the stage
+			selectScreen = new SelectScreen(); //creates a new play screen
+			selectScreen.addEventListener( NavigationEvent.START, onRequestStart );//waits for the player to die like before
+			addChild( selectScreen );//adds the play screen back to the stage
 		 
 			gameOverScreen = null;//removes the game over screen
 		}

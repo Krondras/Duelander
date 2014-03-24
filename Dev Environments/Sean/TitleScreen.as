@@ -15,7 +15,7 @@
  
 		public function onClickStart( mouseEvent:MouseEvent ):void 
 		{
- 			dispatchEvent( new NavigationEvent(NavigationEvent.START ));
+ 			dispatchEvent( new NavigationEvent(NavigationEvent.CHARSELECT ));
 		}
 	}
 }

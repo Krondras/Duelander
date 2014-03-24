@@ -1,5 +1,10 @@
 ﻿package  {
 
+	/*To do:
+	have a period of time where the controls don't work to do like a round one and shit.
+	on enemy death, create a NEXT STAGE screen.
+	*/
+
 	import flash.display.*;
 	import flash.utils.*;
 	import flash.events.*
@@ -34,23 +39,66 @@
 		
 		public var playStage:Stage;
 		
-		public function Main(parentStage:Stage) 
+		private var gameStartTime:uint;
+		private var gameTime:uint;
+		private var gameTimeField:TextField;
+		
+		private var gameBackground:MovieClip;
+		
+		private var enemyPicker:int;
+		
+		public function Main(parentStage:Stage, tempPlayerType:String) 
 		{
 			isPaused = false;
 			isMuted = false;
 			enemyWasHit = false;
 			enemyDead = false;
 			playStage = parentStage;
-			playerType = "Samurai";
+			playerType = tempPlayerType;
 			
-			player = new Samurai();
-			enemy = new Enemy(new DuelistIcon());
+			if (playerType == "Samurai")
+				player = new Samurai();
+				
+			else if (playerType == "Duelist")
+				player = new Duelist();
+			
+			else
+				player = new Knight();
+			
+			enemyPicker = Math.random()*2;
+			
+			if (enemyPicker == 0)
+			{
+				enemy = new Enemy(new KnightIcon());
+				gameBackground = new KnightBackground();
+			}
+			
+			else if (enemyPicker == 1)
+			{
+				enemy = new Enemy(new DuelistIcon());
+				gameBackground = new DuelistBackground();
+			}
+			
+			else
+			{
+				enemy = new Enemy(new SamuraiIcon());
+				gameBackground = new SamuraiBackground();
+			}
+			
+			playStage.addChild(gameBackground);
 			
 			playStage.addChild(player);
 			playStage.addChild(player.playerIcon);	
 			
 			playStage.addChild(enemy);
 			playStage.addChild(enemy.enemyIcon);	
+			
+			gameTimeField = new TextField();
+			gameTimeField.x = playStage.stageWidth/2;
+			addChild(gameTimeField);
+			
+			gameStartTime = getTimer();
+			gameTime = 0;
 			
 			gameTimer.start();
 			playerActionTimer.start();
@@ -62,6 +110,7 @@
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
 			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
+			playStage.addEventListener(Event.ENTER_FRAME,showTime);
 		}
 		
 		public function update(e)
@@ -131,13 +180,33 @@
 					else
 					{
 						enemyDead = true;
+						playStage.removeChild(gameBackground);
 						playStage.removeChild(enemy.enemyIcon);
 						playStage.removeChild(enemy);
 						
 						enemyDead = false;
 						
-						enemy = new Enemy(new DuelistIcon());
+						enemyPicker = Math.random()*2;
+			
+						if (enemyPicker == 0)
+						{
+							enemy = new Enemy(new KnightIcon());
+							gameBackground = new KnightBackground();
+						}
 						
+						else if (enemyPicker == 1)
+						{
+							enemy = new Enemy(new DuelistIcon());
+							gameBackground = new DuelistBackground();
+						}
+						
+						else
+						{
+							enemy = new Enemy(new SamuraiIcon());
+							gameBackground = new SamuraiBackground();
+						}
+						
+						//playStage.addChild(gameBackground);
 						playStage.addChild(enemy);
 						playStage.addChild(enemy.enemyIcon);	
 						//dispatchEvent(new EnemyEvent(EnemyEvent.ENEMYDEAD));
@@ -256,6 +325,7 @@
 			gameTimer.stop();
 			playerActionTimer.stop();
 			enemyActionTimer.stop();
+			playStage.removeChild(gameBackground);
 			playStage.removeChild(player.playerIcon);
 			playStage.removeChild(player);
 			playStage.removeChild(enemy.enemyIcon);
@@ -264,5 +334,19 @@
 			playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 		}
 		
+		public function showTime(event:Event) 
+		{
+			gameTime = getTimer()-gameStartTime;
+			gameTimeField.text = "Time: "+clockTime(gameTime);
+		}
+		
+		public function clockTime(ms:int) 
+		{
+			var seconds:int = Math.floor(ms/1000);
+			var minutes:int = Math.floor(seconds/60);
+			seconds -= minutes*60;
+			var timeString:String = minutes+":"+String(seconds+100).substr(1,2);
+			return timeString;
+		}
 	}
 }
