@@ -46,6 +46,7 @@
 			player = new Samurai();
 			enemy = new Enemy(new DuelistIcon());
 			
+			
 			playStage.addChild(player);
 			playStage.addChild(player.playerIcon);	
 			
@@ -58,6 +59,7 @@
 			
 			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
+			playStage.addEventListener(EnemyEvent.ATTACK, EnemyState);
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
 		}
 		
@@ -80,7 +82,7 @@
 				if(player.playerAttack && player.playerIcon.currentFrame == 6)
 				{
 					player.playerIcon.stop();
-					player.playerAttack = false;
+					//player.playerAttack = false;
 					enemyWasHit = false;
 					player.playerActionTimer.start();
 				}
@@ -128,10 +130,13 @@
 					else
 					{
 						enemyWasHit = true;
-						enemyDead = true;
+						//enemyDead = true;
 						//remove this later and put in enemyClass
 						playStage.removeChild(enemy.enemyIcon);
 						playStage.removeChild(enemy);
+						enemy = new Enemy(new DuelistIcon());
+						playStage.addChild(enemy);
+						playStage.addChild(enemy.enemyIcon);
 					}
 					
 				}
@@ -139,6 +144,7 @@
 			
 				if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon.samuraiMask) && !enemyWasHit)
 				{
+				
 					if(player.playerBlock)
 					{
 						enemy.enemyIcon.gotoAndStop(6);
@@ -243,9 +249,16 @@
 		
 		public function EnemyAttack()
 		{
+			dispatchEvent(new EnemyEvent(EnemyEvent.ATTACK));
+			trace("Attacked");
 			enemy.enemyAttack = true;
 			enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
+		}
+		public function EnemyState(enemyEvent:EnemyEvent)
+		{
+			trace("Succesfully threw listener");
+			enemy.EnemyState(enemyEvent);
 		}
 		
 	}

@@ -11,9 +11,12 @@
 		public var difficulty:Number;
 		var speed;
 		var actionDelay;
-		
+		public var state;
+		//state: 0-advance 1-retreat 2-attack 3-defend
 		public function Enemy(tempIcon:MovieClip) 
 		{
+			
+			state = 0;
 			// constructor code
 			difficulty = 5;
 			actionDelay = 12;
@@ -30,6 +33,15 @@
 		}
 		public function Update(tempPlayer:Player)
 		{
+			//check for detects and changes in the state
+			if(state == 0)
+			{
+				//detect if enemy is near
+				//detect if the enemy is attacking
+				//detect if the enemy is blocking
+				
+			}
+			//action delay is the cooldown effect
 			actionDelay -= 1;
 			
 			if(actionDelay == 0)
@@ -103,6 +115,10 @@
 			
 			var s = Math.sqrt(((enemyIcon.x-playerOb.x)*(enemyIcon.x-playerOb.x))+((enemyIcon.y-playerOb.y)*(enemyIcon.y-playerOb.y)));//(((enemyIcon.x – playerOb.x) * (enemyIcon.x - playerOb.x )) + ((enemyIcon.y - playerOb.y ) * (enemyIcon.y - playerOb.y )));
 			return s;
+		}
+		public function EnemyState(e)
+		{
+			trace("Well is managed to get into the enemy class into enemyState");
 		}
 
 	}
