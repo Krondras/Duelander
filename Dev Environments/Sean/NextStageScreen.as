@@ -6,12 +6,13 @@
 	import flash.text.*;
 	import flash.media.*;
  
-	public class GameOverScreen extends MovieClip 
+	public class NextStageScreen extends MovieClip 
 	{
 		public var playStage:Stage;
 		private var playTimeText:TextField = new TextField();
+		private var timeAdded:Boolean = false;
 		
-		public function GameOverScreen(tempStage:Stage, tempPlayTime:uint) 
+		public function NextStageScreen(tempStage:Stage, tempPlayTime:uint) 
 		{
 			playStage = tempStage;
 			playTimeText.width = 300;
@@ -27,17 +28,21 @@
 			playTimeText.defaultTextFormat = timeTextFormat;
 			playTimeText.selectable = false;
 			
-			playTimeText.text = "Final Time: "+ clockTime(tempPlayTime);
+			playTimeText.text = "Current Time: "+ clockTime(tempPlayTime);
 			
-			//playStage.addChild(playTimeText);
+			/*if (!timeAdded)
+			{
+				playStage.addChild(playTimeText);
+				timeAdded = true;
+			}*/
 			
-			retryBtn.addEventListener( MouseEvent.CLICK, onClickRestart );
+			continueBtn.addEventListener( MouseEvent.CLICK, onClickContinue );
 		}
  
-		public function onClickRestart( mouseEvent:MouseEvent ):void 
+		public function onClickContinue( mouseEvent:MouseEvent ):void 
 		{
 			playStage.removeChild(playTimeText);
- 			dispatchEvent( new NavigationEvent(NavigationEvent.RESTART ));
+ 			dispatchEvent( new NavigationEvent(NavigationEvent.CONTINUE ));
 		}
 		
 		public function clockTime(ms:int) 

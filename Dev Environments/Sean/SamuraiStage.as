@@ -12,7 +12,7 @@
 	import flash.media.*;
 	import flash.sensors.*;
 	
-	public class Main extends MovieClip 
+	public class SamuraiStage extends MovieClip 
 	{
 
 		public var player:Player;
@@ -42,23 +42,29 @@
 		
 		public var playStage:Stage;
 		
+		public var gameBackground:MovieClip;
+		
 		public var gameTime:uint; //Game time, in ms
+		
+		public var pauseText:TextField = new TextField();
+		
 		private var gameStartTime:uint;
 		private var gameTimeField:TextField;
 		
 		private var readyText:MovieClip = new ReadyText();
 		private var fightText:MovieClip = new FightText();
 		
-		private var gameBackground:MovieClip;
+		private var screenCleared:Boolean = false;
 		
 		private var enemyPicker:int;
 		
-		public function Main(parentStage:Stage, tempPlayerType:String) 
+		public function SamuraiStage(parentStage:Stage, tempPlayerType:String) 
 		{
 			isPaused = false;
 			isMuted = false;
 			enemyWasHit = false;
 			enemyDead = false;
+			pauseText.text = "";
 			playStage = parentStage;
 			playerType = tempPlayerType;
 			
@@ -71,25 +77,8 @@
 			else
 				player = new Knight();
 			
-			enemyPicker = Math.random()*2;
-			
-			if (enemyPicker == 0)
-			{
-				enemy = new Enemy(new KnightIcon());
-				gameBackground = new KnightBackground();
-			}
-			
-			else if (enemyPicker == 1)
-			{
-				enemy = new Enemy(new DuelistIcon());
-				gameBackground = new DuelistBackground();
-			}
-			
-			else
-			{
-				enemy = new Enemy(new SamuraiIcon());
-				gameBackground = new SamuraiBackground();
-			}
+			enemy = new Enemy(new SamuraiIcon());
+			gameBackground = new SamuraiBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
 			
@@ -111,7 +100,10 @@
 			timeTextFormat.color = 0xffffff;
 			gameTimeField.defaultTextFormat = timeTextFormat;
 			
+			pauseText.defaultTextFormat = timeTextFormat;
+			
 			playStage.addChild(gameTimeField); //Index 6
+			playStage.addChild(pauseText); //Index 7
 			
 			readyText.gotoAndStop(1);
 			readyText.visible = false;
@@ -119,15 +111,13 @@
 			fightText.gotoAndStop(1);
 			fightText.visible = false;
 			
-			playStage.addChild(readyText); //Index 7
-			playStage.addChild(fightText); //Index 8
+			playStage.addChild(readyText); //Index 8
+			playStage.addChild(fightText); //Index 9
 				
 			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
-			playStage.addEventListener(EnemyEvent.ENEMYDEAD, spawnNewEnemy);
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
 			playStage.addEventListener(Event.ENTER_FRAME,showTime);
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
 			
@@ -201,7 +191,6 @@
 					else
 					{
 						enemyDead = true;
-						//playStage.removeChild(gameBackground);
 						playStage.removeChild(enemy.enemyIcon);
 						playStage.removeChild(enemy);
 						
@@ -276,14 +265,14 @@
 			if (keys[80] && !isPaused)
 			{
 				gameTimer.stop();
-				//pauseText.text = "Paused";
+				pauseText.text = "Paused";
 				isPaused = true;
 			}
 			
 			else if (keys[80] && isPaused)
 			{
 				gameTimer.start();
-				//pauseText.text = "";
+				pauseText.text = "";
 				isPaused = false;
 			}
 			
@@ -337,23 +326,23 @@
 			enemyActionTimer.reset();
 		}
 		
-		public function spawnNewEnemy(enemyEvent:EnemyEvent ):void //Spawn a new enemy
-		{
-		}
-		
 		public function screenClear()
 		{
-			gameTimer.stop();
-			playerActionTimer.stop();
-			enemyActionTimer.stop();
-			playStage.removeChild(gameBackground);
-			playStage.removeChild(player.playerIcon);
-			playStage.removeChild(player);
-			playStage.removeChild(enemy.enemyIcon);
-			playStage.removeChild(enemy);
-			playStage.removeChild(gameTimeField);
-			playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-			playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+			if (!screenCleared)
+			{
+				gameTimer.stop();
+				playerActionTimer.stop();
+				enemyActionTimer.stop();
+				playStage.removeChild(gameBackground);
+				playStage.removeChild(player.playerIcon);
+				playStage.removeChild(player);
+				playStage.removeChild(enemy.enemyIcon);
+				playStage.removeChild(enemy);
+				playStage.removeChild(gameTimeField);
+				playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+				playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+				screenCleared = true;
+			}
 		}
 		
 		public function showTime(event:Event) 
@@ -367,7 +356,7 @@
 		
 		public function clockTime(ms:int) 
 		{
-			if (gamePlaying)
+			if (gamePlaying && !isPaused)
 			{
 				var seconds:int = Math.floor(ms/1000);
 				var minutes:int = Math.floor(seconds/60);

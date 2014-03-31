@@ -8,6 +8,8 @@
 		public static const RESTART:String = "restart";
 		public static const CLOSEGAME:String = "close game";
 		public static const TOMENU:String = "to menu";
+		public static const NEXTSTAGE:String = "next stage";
+		public static const CONTINUE:String = "continue";
 		
 		public function NavigationEvent( type:String )
 		{

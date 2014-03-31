@@ -41,10 +41,10 @@
 		{
 			//When the movement timer has reached a value cleanly divisible by the movementTimer interval,
 			//run movement
-			if(movementTimer.currentCount % movementTimerInterval == 0)
-			{
+			//if(movementTimer.currentCount % movementTimerInterval == 0)
+			//{
 				Movement(keys);
-			}
+			//}
 		}
 		
 		public function Movement(keys:Object)

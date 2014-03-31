@@ -12,7 +12,7 @@
 	import flash.media.*;
 	import flash.sensors.*;
 	
-	public class Main extends MovieClip 
+	public class DuelistStage extends MovieClip 
 	{
 
 		public var player:Player;
@@ -43,17 +43,20 @@
 		public var playStage:Stage;
 		
 		public var gameTime:uint; //Game time, in ms
+		
+		public var gameBackground:MovieClip;
+		
+		public var screenCleared:Boolean = false;
+		
 		private var gameStartTime:uint;
 		private var gameTimeField:TextField;
 		
 		private var readyText:MovieClip = new ReadyText();
 		private var fightText:MovieClip = new FightText();
-		
-		private var gameBackground:MovieClip;
-		
+
 		private var enemyPicker:int;
 		
-		public function Main(parentStage:Stage, tempPlayerType:String) 
+		public function DuelistStage(parentStage:Stage, tempPlayerType:String) 
 		{
 			isPaused = false;
 			isMuted = false;
@@ -71,25 +74,8 @@
 			else
 				player = new Knight();
 			
-			enemyPicker = Math.random()*2;
-			
-			if (enemyPicker == 0)
-			{
-				enemy = new Enemy(new KnightIcon());
-				gameBackground = new KnightBackground();
-			}
-			
-			else if (enemyPicker == 1)
-			{
-				enemy = new Enemy(new DuelistIcon());
-				gameBackground = new DuelistBackground();
-			}
-			
-			else
-			{
-				enemy = new Enemy(new SamuraiIcon());
-				gameBackground = new SamuraiBackground();
-			}
+			enemy = new Enemy(new DuelistIcon());
+			gameBackground = new DuelistBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
 			
@@ -124,10 +110,9 @@
 				
 			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
-			playStage.addEventListener(EnemyEvent.ENEMYDEAD, spawnNewEnemy);
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
+			//changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
 			playStage.addEventListener(Event.ENTER_FRAME,showTime);
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
 			
@@ -201,7 +186,6 @@
 					else
 					{
 						enemyDead = true;
-						//playStage.removeChild(gameBackground);
 						playStage.removeChild(enemy.enemyIcon);
 						playStage.removeChild(enemy);
 						
@@ -303,33 +287,6 @@
 			keys[e.keyCode] = false; //Sets the value of key to two things--the keycode of the key being released, and the value "false".
 		}
 		
-		public function changeCharacter(e)
-		{
-			playStage.removeChild(player.playerIcon);
-			playStage.removeChild(player);
-				
-			if (player.playerType == "Samurai")
-			{
-				player = new Duelist();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-				
-			else if (player.playerType == "Duelist")
-			{
-				player = new Knight();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-				
-			else
-			{
-				player = new Samurai();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-		}
-		
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
@@ -337,23 +294,23 @@
 			enemyActionTimer.reset();
 		}
 		
-		public function spawnNewEnemy(enemyEvent:EnemyEvent ):void //Spawn a new enemy
-		{
-		}
-		
 		public function screenClear()
 		{
-			gameTimer.stop();
-			playerActionTimer.stop();
-			enemyActionTimer.stop();
-			playStage.removeChild(gameBackground);
-			playStage.removeChild(player.playerIcon);
-			playStage.removeChild(player);
-			playStage.removeChild(enemy.enemyIcon);
-			playStage.removeChild(enemy);
-			playStage.removeChild(gameTimeField);
-			playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-			playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+			if (!screenCleared)
+			{
+				gameTimer.stop();
+				playerActionTimer.stop();
+				enemyActionTimer.stop();
+				playStage.removeChild(gameBackground);
+				playStage.removeChild(player.playerIcon);
+				playStage.removeChild(player);
+				playStage.removeChild(enemy.enemyIcon);
+				playStage.removeChild(enemy);
+				playStage.removeChild(gameTimeField);
+				playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+				playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+				screenCleared = true;
+			}
 		}
 		
 		public function showTime(event:Event) 

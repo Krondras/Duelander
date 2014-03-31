@@ -12,7 +12,7 @@
 	import flash.media.*;
 	import flash.sensors.*;
 	
-	public class Main extends MovieClip 
+	public class KnightStage extends MovieClip 
 	{
 
 		public var player:Player;
@@ -29,6 +29,8 @@
 		public var playerActionTimer:Timer = new Timer(100);
 		public var enemyActionTimer:Timer = new Timer(100);
 		public var preFightTimer:Timer = new Timer(100);
+		public var winTimer:Timer = new Timer(100);
+		public var loseTimer:Timer = new Timer(100);
 		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
@@ -43,17 +45,20 @@
 		public var playStage:Stage;
 		
 		public var gameTime:uint; //Game time, in ms
+		
+		public var gameBackground:MovieClip;
+		
+		public var pauseText:TextField = new TextField();
 		private var gameStartTime:uint;
 		private var gameTimeField:TextField;
 		
 		private var readyText:MovieClip = new ReadyText();
 		private var fightText:MovieClip = new FightText();
+		private var winText:MovieClip = new WinText();
 		
-		private var gameBackground:MovieClip;
+		private var screenCleared:Boolean = false;
 		
-		private var enemyPicker:int;
-		
-		public function Main(parentStage:Stage, tempPlayerType:String) 
+		public function KnightStage(parentStage:Stage, tempPlayerType:String) 
 		{
 			isPaused = false;
 			isMuted = false;
@@ -71,25 +76,8 @@
 			else
 				player = new Knight();
 			
-			enemyPicker = Math.random()*2;
-			
-			if (enemyPicker == 0)
-			{
-				enemy = new Enemy(new KnightIcon());
-				gameBackground = new KnightBackground();
-			}
-			
-			else if (enemyPicker == 1)
-			{
-				enemy = new Enemy(new DuelistIcon());
-				gameBackground = new DuelistBackground();
-			}
-			
-			else
-			{
-				enemy = new Enemy(new SamuraiIcon());
-				gameBackground = new SamuraiBackground();
-			}
+			enemy = new Enemy(new KnightIcon());
+			gameBackground = new KnightBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
 			
@@ -124,12 +112,12 @@
 				
 			playStage.addEventListener(KeyboardEvent.KEY_DOWN, keyDown); //adds a keydown listener
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
-			playStage.addEventListener(EnemyEvent.ENEMYDEAD, spawnNewEnemy);
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
-			playStage.addEventListener(Event.ENTER_FRAME,showTime);
+			playStage.addEventListener(Event.ENTER_FRAME, showTime);
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
+			playStage.addEventListener(Event.ENTER_FRAME, winFight);
+			playStage.addEventListener(Event.ENTER_FRAME, loseFight);
 			
 			playStage.setChildIndex(gameBackground, 1);
 		}
@@ -200,39 +188,14 @@
 					}
 					else
 					{
+						player.playerIcon.gotoAndStop(0);
 						enemyDead = true;
-						//playStage.removeChild(gameBackground);
-						playStage.removeChild(enemy.enemyIcon);
-						playStage.removeChild(enemy);
-						
-						enemyDead = false;
-						
-						enemyPicker = Math.random()*2;
-			
-						if (enemyPicker == 0)
-						{
-							enemy = new Enemy(new KnightIcon());
-							gameBackground = new KnightBackground();
-						}
-						
-						else if (enemyPicker == 1)
-						{
-							enemy = new Enemy(new DuelistIcon());
-							gameBackground = new DuelistBackground();
-						}
-						
-						else
-						{
-							enemy = new Enemy(new SamuraiIcon());
-							gameBackground = new SamuraiBackground();
-						}
-						
-						//playStage.addChild(gameBackground);
-						playStage.addChild(enemy);
-						playStage.addChild(enemy.enemyIcon);	
-						//dispatchEvent(new EnemyEvent(EnemyEvent.ENEMYDEAD));
 					}
-					
+					gamePlaying = false;
+					gameTimer.stop();
+					playerActionTimer.stop();
+					enemyActionTimer.stop();
+					winTimer.start();
 				}
 			
 				
@@ -247,9 +210,11 @@
 					}
 					else
 					{
-						playerWasHit = true;
-						screenClear();
-						dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
+						gamePlaying = false;
+						gameTimer.stop();
+						playerActionTimer.stop();
+						enemyActionTimer.stop();
+						loseTimer.start();
 					}
 				}
 			
@@ -265,8 +230,6 @@
 					EnemyAttack();
 				}
 			}
-			
-			
 		}
 		
 		public function keyDown(e) // Activates when a key is pressed down
@@ -276,14 +239,15 @@
 			if (keys[80] && !isPaused)
 			{
 				gameTimer.stop();
-				//pauseText.text = "Paused";
+				
+				pauseText.text = "Paused";
 				isPaused = true;
 			}
 			
 			else if (keys[80] && isPaused)
 			{
 				gameTimer.start();
-				//pauseText.text = "";
+				pauseText.text = "";
 				isPaused = false;
 			}
 			
@@ -303,62 +267,33 @@
 			keys[e.keyCode] = false; //Sets the value of key to two things--the keycode of the key being released, and the value "false".
 		}
 		
-		public function changeCharacter(e)
-		{
-			playStage.removeChild(player.playerIcon);
-			playStage.removeChild(player);
-				
-			if (player.playerType == "Samurai")
-			{
-				player = new Duelist();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-				
-			else if (player.playerType == "Duelist")
-			{
-				player = new Knight();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-				
-			else
-			{
-				player = new Samurai();
-				playStage.addChild(player);
-				playStage.addChild(player.playerIcon);
-			}
-		}
-		
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
 			enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}
+	
 		
-		public function spawnNewEnemy(enemyEvent:EnemyEvent ):void //Spawn a new enemy
+		public function clearScreen()
 		{
-		}
-		
-		public function screenClear()
-		{
-			gameTimer.stop();
-			playerActionTimer.stop();
-			enemyActionTimer.stop();
-			playStage.removeChild(gameBackground);
-			playStage.removeChild(player.playerIcon);
-			playStage.removeChild(player);
-			playStage.removeChild(enemy.enemyIcon);
-			playStage.removeChild(enemy);
-			playStage.removeChild(gameTimeField);
-			playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-			playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+			if (!screenCleared)
+			{
+				playStage.removeChild(gameBackground);
+				playStage.removeChild(gameTimeField);
+				playStage.removeChild(player.playerIcon);
+				playStage.removeChild(player);
+				playStage.removeChild(enemy.enemyIcon);
+				playStage.removeChild(enemy);
+				playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+				playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
+				screenCleared = true;
+			}
 		}
 		
 		public function showTime(event:Event) 
 		{
-			if (gamePlaying)
+			if (gamePlaying && !isPaused)
 			{
 				gameTime = getTimer()-gameStartTime;
 				gameTimeField.text = "Time: "+clockTime(gameTime);
@@ -367,7 +302,7 @@
 		
 		public function clockTime(ms:int) 
 		{
-			if (gamePlaying)
+			if (gamePlaying && !isPaused)
 			{
 				var seconds:int = Math.floor(ms/1000);
 				var minutes:int = Math.floor(seconds/60);
@@ -379,33 +314,38 @@
 		
 		public function preFight(e)
 		{
+			//Set ready text position.
 			readyText.x = playStage.stageWidth/2;
 			readyText.y = playStage.stageHeight/2;
 			
+			//Set fight text position.
 			fightText.x = playStage.stageWidth/2;
 			fightText.y = playStage.stageHeight/2;
 			
+			//Start prefight timer.
 			preFightTimer.start();
-			//trace(preFightTimer.currentCount);
 			
-			
+			//Display "READY?"
 			if(preFightTimer.currentCount == 5)
 			{
 				readyText.visible = true;
 				readyText.play();
 			}
 			
+			//Hide ready text
 			else if(preFightTimer.currentCount == 25)
 			{
 				readyText.visible = false;
 			}
 			
+			//Show fight text
 			else if(preFightTimer.currentCount == 35)
 			{
 				fightText.visible = true;
 				fightText.play();
 			}
 			
+			//Hide fight text
 			else if(preFightTimer.currentCount == 50)
 			{
 				fightText.visible = false;
@@ -415,10 +355,43 @@
 				gameStartTime = getTimer();
 				gameTime = 0;
 				gamePlaying = true;
+				playStage.removeChild(fightText);
+				playStage.removeChild(readyText);
 				preFightTimer.stop();
 				playStage.removeEventListener(Event.ENTER_FRAME, preFight);
 			}
+		}
+		
+		public function winFight(e)
+		{
+			if (winTimer.currentCount == 5)
+			{
+				winText.x = playStage.stageWidth/2 - winText.width;
+				winText.y = playStage.stageHeight/2 - winText.height;
+				//playStage.addChild(winText);
+			}
 			
+			else if (winTimer.currentCount == 50)
+			{
+				dispatchEvent( new NavigationEvent(NavigationEvent.NEXTSTAGE ));
+				clearScreen();
+			}
+		}
+		
+		public function loseFight(e)
+		{
+			if (loseTimer.currentCount == 5)
+			{
+				//winText.x = playStage.stageWidth/2 - winText.width;
+				//winText.y = playStage.stageHeight/2 - winText.height;
+				//playStage.addChild(winText);
+			}
+			
+			else if (loseTimer.currentCount == 50)
+			{
+				dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
+				clearScreen();
+			}
 		}
 	}
 }
