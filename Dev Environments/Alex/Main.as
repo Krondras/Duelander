@@ -41,9 +41,9 @@
 			enemyWasHit = false;
 			enemyDead = false;
 			playStage = parentStage;
-			playerType = "Samurai";
+			playerType = "Knight";
 			
-			player = new Samurai();
+			player = new Knight();
 			enemy = new Enemy(new DuelistIcon());
 			
 			
