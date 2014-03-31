@@ -12,6 +12,8 @@
 		public var selectScreen:SelectScreen; //container for the character selection
 		public var playScreen:Main; //container variable for the play screen
 		public var gameOverScreen:GameOverScreen; //container variable for the game over screen.
+		
+		public var finalPlayTime:int;
  		
 		public function DocumentClass() //Initializes the title screen when you first open the game.
 		{
@@ -22,7 +24,8 @@
 		
 		public function onPlayerDeath( playerEvent:PlayerEvent ):void //Changes to the game over screen when the player dies.
 		{
-			gameOverScreen = new GameOverScreen(); //creates the game over screen
+			finalPlayTime = playScreen.gameTime;
+			gameOverScreen = new GameOverScreen(stage, finalPlayTime); //creates the game over screen
 			addChild( gameOverScreen ); //adds the game over screen to the stage
 		 	gameOverScreen.addEventListener( NavigationEvent.RESTART, onRequestRestart ); //adds a listener for the game to restart (see GameOverScreen.as)
 			playScreen = null; //removes the play screen.

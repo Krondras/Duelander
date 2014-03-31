@@ -33,7 +33,7 @@
 			
 			isAlive = true;
 			playerIcon.x = 120;
-			playerIcon.y = 380;
+			playerIcon.y = 370;
 			playerIcon.stop();
 		}
 		

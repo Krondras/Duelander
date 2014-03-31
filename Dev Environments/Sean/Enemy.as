@@ -19,7 +19,7 @@
 			actionDelay = 12;
 			enemyIcon = tempIcon;
 			enemyIcon.x = 380;
-			enemyIcon.y = 380;
+			enemyIcon.y = 370;
 			enemyIcon.scaleX *= -1;
 			enemyIcon.stop();
 			speed = 1;
