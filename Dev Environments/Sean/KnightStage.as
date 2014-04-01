@@ -179,7 +179,7 @@
 			
 			if (!enemyDead) //Checks if the enemy is dead before checking hits.
 			{
-				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
+				if(playerAttack && player.playerIcon.sword2.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
 				{
 					if(enemy.isBlocking)
 					{
@@ -199,7 +199,7 @@
 				}
 			
 				
-				if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
+				if(enemy.enemyAttack && enemy.enemyIcon.sword2.hitTestObject(player.playerIcon) && !enemyWasHit)
 				{
 					if(player.playerBlock)
 					{
@@ -218,7 +218,7 @@
 					}
 				}
 			
-				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
+				if(playerAttack && player.playerIcon.sword2.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
 				{
 					player.playerIcon.x -= 50;
 					enemy.enemyIcon.x += 50;

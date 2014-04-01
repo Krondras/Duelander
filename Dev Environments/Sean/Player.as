@@ -15,6 +15,8 @@
 		public var isAlive:Boolean;
 		public var playerBlock:Boolean;
 		public var playerAttack:Boolean = false;
+		public var moveModTime:Number;
+		public var isMoving:Boolean;
 		
 		public var playerIcon:MovieClip;
 		
@@ -26,12 +28,14 @@
 			movementTimerInterval = tempMovementTimerInterval;
 			
 			playerActionTimer = new Timer(100);
-			movementTimer = new Timer(100); //Fires the movement timer every 1/10th of a second.
+			movementTimer = new Timer(100); 
+			moveModTime = 2;//Fires the movement timer every 1/10th of a second.
 			
 			movementTimer.start();
 			playerActionTimer.start();
 			
 			isAlive = true;
+			isMoving = false;
 			playerIcon.x = 120;
 			playerIcon.y = 370;
 			playerIcon.stop();
@@ -44,6 +48,15 @@
 			//if(movementTimer.currentCount % movementTimerInterval == 0)
 			//{
 				Movement(keys);
+				if(moveModTime <= 0)
+				{
+					spriteUpdate();
+					
+				}
+				else
+				{
+					moveModTime -= 1;
+				}
 			//}
 		}
 		
@@ -53,11 +66,33 @@
 			{
 				if (keys[currentKeys])
 				{
+					
 					if(currentKeys == 37 && playerIcon.x - playerIcon.width/2 > 0)
-						playerIcon.x -= moveSpeed;
+					{
 						
-					if(currentKeys == 39 && playerIcon.x + playerIcon.width/2 < stage.stageWidth)
-						playerIcon.x += moveSpeed;
+						if(movementTimer.currentCount % movementTimerInterval == 0)
+						{
+						
+							playerIcon.x -= moveSpeed;
+							isMoving = true;
+						//spriteUpdate();
+						}
+						
+					}
+						
+					else if(currentKeys == 39 && playerIcon.x + playerIcon.width/2 < stage.stageWidth)
+					{
+						if(movementTimer.currentCount % movementTimerInterval == 0)
+						{
+							playerIcon.x += moveSpeed;
+							isMoving = true;
+						//spriteUpdate();
+						}
+					}
+					else
+					{
+						isMoving = false;
+					}
 				}
 			}
 		}
@@ -72,6 +107,30 @@
 					{
 						playerAttack = true;
 						playerIcon.gotoAndPlay(1);
+						if(playerType == "Samurai")
+						{
+							playerIcon.sheetSam.x = -303;
+							playerIcon.sheetSam.y = -160;
+							playerIcon.samuraiMask.width = 72;
+						}
+						else if(playerType == "Duelist")
+						{
+							playerIcon.sheetSam.x = -37.5-91*4;
+							playerIcon.sheetSam.y = -144.8;
+							playerIcon.duelistMask.width = 90;
+						}
+						else if(playerType == "Knight")
+						{
+							playerIcon.sheetSam.x = -35;
+							playerIcon.sheetSam.y = -152;
+							playerIcon.knightMask.y -= 5;
+							playerIcon.sheetSam.y -= 5;
+						}
+						else
+						{
+							trace("WHAT THE HECK");
+						}
+						
 						playerActionTimer.reset();
 					}
 				}
@@ -87,11 +146,258 @@
 					if(currentKeys == 16 && !playerBlock && playerActionTimer.currentCount  >= 5)
 					{
 						playerBlock = true;
-						playerIcon.gotoAndPlay(7);
+						//playerIcon.gotoAndPlay(7);
+						if(playerType == "Duelist")
+						{
+							playerIcon.sheetSam.x = -37.5;
+							playerIcon.sheetSam.y = -222.2;
+						}
+						else if(playerType == "Samurai")
+						{
+							playerIcon.sheetSam.y = -240;
+							playerIcon.sheetSam.x = -15;
+						}
+						else if(playerType == "Knight")
+						{
+							playerIcon.sheetSam.y = -255;
+							playerIcon.sheetSam.x = -35;
+						}
+						//playerIcon.sheetSam.x = 0;
+						//playerIcon.samuraiMask.width = 48;
 						playerActionTimer.reset();	
+						
 					}
 				}
 			}
+		}
+		
+		//updates spritesheet for additional componenets when moved
+		public function spriteUpdate()
+		{
+			if(playerType == "Samurai")
+			{
+				if(isMoving)
+				{
+					playerIcon.samuraiMask.width = 48;
+					if(playerIcon.sheetSam.x <= -202)
+					{
+						playerIcon.sheetSam.x = -15;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 48;
+					}
+				}
+				else if(playerAttack)
+				{
+					playerIcon.sheetSam.y = -160;
+					if(playerIcon.sheetSam.x <= -302)
+					{
+						playerIcon.sheetSam.x = -15;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 72;
+					}
+					
+					if(playerIcon.sheetSam.x == -15)
+					{
+						moveModTime = 2;
+					}
+					else if(playerIcon.sheetSam.x == -303)
+					{
+						moveModTime = 10;
+						playerAttack = false;
+					}
+					else
+					{
+						moveModTime = 0;
+					}
+				}
+				else if(playerBlock)
+				{
+					playerIcon.samuraiMask.width = 48;
+					
+					if(playerIcon.sheetSam.x <= -112)
+					{
+						
+						playerIcon.sheetSam.x = -15;
+						//playerIcon.sheetSam.x = -111;
+					}
+					else if(playerIcon.sheetSam.x == -111)
+					{
+						playerBlock = false;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 48;
+					}
+				}
+				
+				else
+				{
+					
+					playerIcon.samuraiMask.width = 48;
+					playerIcon.sheetSam.y = -80;
+					playerIcon.sheetSam.x = -15;
+					
+				}
+			}
+			else if(playerType == "Duelist")
+			{
+				if(isMoving)
+				{
+					playerIcon.duelistMask.width = 75;
+					if(playerIcon.sheetSam.x <= -202)
+					{
+						playerIcon.sheetSam.x = -37.5;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 78;
+					}
+				}
+				else if(playerAttack)
+				{
+					//playerIcon.sheetSam.y = -160;
+					if(playerIcon.sheetSam.x < -37.5-(91*4)+1)
+					{
+						playerIcon.sheetSam.x = -37.5;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 91;
+					}
+					
+					if(playerIcon.sheetSam.x == -37.5)
+					{
+						moveModTime = 2;
+					}
+					else if(playerIcon.sheetSam.x == -37.5-(91*4))
+					{
+						moveModTime = 10;
+						playerAttack = false;
+					}
+					else
+					{
+						moveModTime = 0;
+
+					}
+				}
+				
+				else if(playerBlock)
+				{
+					playerIcon.duelistMask.width = 90;
+					
+					
+					if(playerIcon.sheetSam.x < -37.5-(91*2))
+					{
+						
+						playerIcon.sheetSam.x = -37.5;
+						//playerIcon.sheetSam.x = -111;
+					}
+					else if(playerIcon.sheetSam.x == -37.5-(91*2))
+					{
+						playerBlock = false;
+						trace("Got here");
+						//playerIcon.sheetSam.x = -37.5;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 91;
+					}
+				}
+				else
+				{
+					playerIcon.duelistMask.width = 75;
+					playerIcon.sheetSam.y = -67.5;
+					playerIcon.sheetSam.x = -37.5;
+					moveModTime = 0;
+				}
+			}
+			else if(playerType == "Knight")
+			{
+				if(isMoving)
+				{
+					playerIcon.knightMask.width = 250/3.5;
+					playerIcon.knightMask.height = 250/3.5;
+					if(playerIcon.sheetSam.x < -1000/3.5 -34)
+					{
+						playerIcon.sheetSam.x = 0-35;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 250/3.5;
+					}
+				}
+				else if(playerAttack)
+				{
+					
+					//playerIcon.sheetSam.y = -160;
+					playerIcon.knightMask.width = 310/3.5;
+					playerIcon.knightMask.height = 350/3.5;
+					if(playerIcon.sheetSam.x < -1550/3.5 - 35)
+					{
+						playerIcon.sheetSam.x = -35;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 85;
+					}
+					
+					if(playerIcon.sheetSam.x == -0-35)
+					{
+						moveModTime = 2;
+					}
+					else if(playerIcon.sheetSam.x == -35 -(85*5))
+					{
+						moveModTime = 10;
+						playerAttack = false;
+						playerIcon.knightMask.y += 5;
+					}
+					else
+					{
+						moveModTime = 0;
+					}
+				}
+				else if(playerBlock)
+				{
+					playerIcon.knightMask.width = 400/3.5;
+					playerIcon.knightMask.height = 250/3.5;
+					
+					
+					if(playerIcon.sheetSam.x < -119*2-35)
+					{
+						
+						playerIcon.sheetSam.x = 0-35;
+						//playerIcon.sheetSam.x = -111;
+					}
+					else if(playerIcon.sheetSam.x <= -119*2 -35)
+					{
+						playerBlock = false;
+						trace("Got here");
+						playerIcon.sheetSam.x = -37.5;
+						playerIcon.sheetSam.y = -70;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 119;
+					}
+				}
+				else
+				{
+					playerIcon.knightMask.width = 250/3.5;
+					playerIcon.knightMask.height = 250/3.5;
+					playerIcon.sheetSam.y = 0 -70;
+					playerIcon.sheetSam.x = 0 -35;
+					moveModTime = 0;
+				}
+			}
+			else
+			{
+				trace("WHAT THE BLEEDING NONSENSE. YOU DON'T HAVE A PLAYER TYPE");
+			}
+			
 		}
 		
 	}
