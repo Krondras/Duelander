@@ -86,9 +86,9 @@
 			else if (playerType == "Duelist")
 			{
 				player = new Duelist();
-				playerHitbox = player.playerIcon.sheetSam.hitbox;
-				playerSwordHitbox = player.playerIcon.sheetSam.attackHitbox;
-				playerGuardHitbox = player.playerIcon.sheetSam.guardHitbox;
+				playerHitbox = player.playerIcon.hitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}
 			
 			else
@@ -100,7 +100,7 @@
 			}
 			
 			enemy = new Enemy(new KnightIcon());
-			enemyHitbox = enemy.enemyIcon.sheetSam.hitbox;
+			enemyHitbox = enemy.enemyIcon.hitbox;
 			enemySwordHitbox = enemy.enemyIcon.sheetSam.attackHitbox;
 			enemyGuardHitbox = enemy.enemyIcon.sheetSam.guardHitbox;
 				
@@ -153,7 +153,7 @@
 		{
 			displayTimer();
 			
-			if(enemySwordHitbox.hitTestObject(playerHitbox))
+			if(playerSwordHitbox.hitTestObject(enemyHitbox))
 			   {
 				   trace("Stab!");
 			   }
@@ -174,26 +174,26 @@
 			{
 				if(playerAttack && player.playerIcon.currentFrame == 6)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					player.playerActionTimer.start();
 				}
 				
 				if(player.playerBlock && player.playerIcon.currentFrame == 10)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					player.playerBlock = false;
 					player.playerActionTimer.start();
 				}
 				
 				if(player.playerBlock && player.playerIcon.currentFrame == 10)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					player.playerBlock = false;
 					playerActionTimer.start();
 				}
 				if(playerAttack && player.playerIcon.currentFrame == 6)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					playerActionTimer.start();
 				}
 				
@@ -207,7 +207,7 @@
 			
 			if (!enemyDead) //Checks if the enemy is dead before checking hits.
 			{
-				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit) 
+				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
 				{
 					trace("Enemy killed")
 						player.playerIcon.gotoAndStop(0);
