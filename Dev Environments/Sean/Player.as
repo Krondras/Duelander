@@ -1,5 +1,8 @@
 ﻿package  
 {
+	
+	//To-do: find a different way to reset the timer.
+	
 	import flash.display.*;
 	import flash.utils.*;
 	
@@ -17,6 +20,7 @@
 		public var playerAttack:Boolean = false;
 		public var moveModTime:Number;
 		public var isMoving:Boolean;
+		public var actionTimerReset:Boolean = false;
 		
 		public var playerIcon:MovieClip;
 		
@@ -67,28 +71,18 @@
 				if (keys[currentKeys])
 				{
 					
-					if(currentKeys == 37 && playerIcon.x - playerIcon.width/2 > 0)
+					if(currentKeys == 37 && playerIcon.x > 0)
 					{
-						
-						if(movementTimer.currentCount % movementTimerInterval == 0)
-						{
-						
-							playerIcon.x -= moveSpeed;
-							isMoving = true;
-						//spriteUpdate();
-						}
-						
+						playerIcon.x -= moveSpeed;
+						isMoving = true;
 					}
 						
-					else if(currentKeys == 39 && playerIcon.x + playerIcon.width/2 < stage.stageWidth)
+					else if(currentKeys == 39 && playerIcon.x < stage.stageWidth)
 					{
-						if(movementTimer.currentCount % movementTimerInterval == 0)
-						{
-							playerIcon.x += moveSpeed;
-							isMoving = true;
-						//spriteUpdate();
-						}
+						playerIcon.x += moveSpeed;
+						isMoving = true;
 					}
+					
 					else
 					{
 						isMoving = false;
@@ -131,7 +125,12 @@
 							trace("WHAT THE HECK");
 						}
 						
-						playerActionTimer.reset();
+						/*if(actionTimerReset == false)
+						{
+							trace(actionTimerReset);
+							playerActionTimer.reset();
+							actionTimerReset = true;
+						}*/
 					}
 				}
 			}
@@ -164,7 +163,7 @@
 						}
 						//playerIcon.sheetSam.x = 0;
 						//playerIcon.samuraiMask.width = 48;
-						playerActionTimer.reset();	
+						//playerActionTimer.reset();	
 						
 					}
 				}

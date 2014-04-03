@@ -35,6 +35,9 @@
 		public var playerAttack:Boolean;//isAttacking 
 		public var gamePlaying:Boolean = false;
 		
+		public var timerCount:Number = 30;
+		public var timerCountdownTimer:Timer = new Timer(1000, timerCount);
+		
 		public var playerWasHit:Boolean;//hit the player
 		public var enemyWasHit:Boolean;//hit the enemy
 		
@@ -112,8 +115,7 @@
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			//changePlayerBtn.addEventListener(MouseEvent.CLICK, changeCharacter);
-			playStage.addEventListener(Event.ENTER_FRAME,showTime);
+			timerCountdownTimer.addEventListener(TimerEvent.TIMER, countdown);
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
 			
 			playStage.setChildIndex(gameBackground, 1);
@@ -121,6 +123,8 @@
 		
 		public function update(e)
 		{
+			displayTimer();
+			
 			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
 				playerActionTimer = player.playerActionTimer;
@@ -313,27 +317,6 @@
 			}
 		}
 		
-		public function showTime(event:Event) 
-		{
-			if (gamePlaying)
-			{
-				gameTime = getTimer()-gameStartTime;
-				gameTimeField.text = "Time: "+clockTime(gameTime);
-			}
-		}
-		
-		public function clockTime(ms:int) 
-		{
-			if (gamePlaying)
-			{
-				var seconds:int = Math.floor(ms/1000);
-				var minutes:int = Math.floor(seconds/60);
-				seconds -= minutes*60;
-				var timeString:String = minutes+":"+String(seconds+100).substr(1,2);
-				return timeString;
-			}
-		}
-		
 		public function preFight(e)
 		{
 			readyText.x = playStage.stageWidth/2;
@@ -343,8 +326,6 @@
 			fightText.y = playStage.stageHeight/2;
 			
 			preFightTimer.start();
-			//trace(preFightTimer.currentCount);
-			
 			
 			if(preFightTimer.currentCount == 5)
 			{
@@ -369,13 +350,21 @@
 				gameTimer.start();
 				playerActionTimer.start();
 				enemyActionTimer.start();
-				gameStartTime = getTimer();
-				gameTime = 0;
+				timerCountdownTimer.start();
 				gamePlaying = true;
 				preFightTimer.stop();
 				playStage.removeEventListener(Event.ENTER_FRAME, preFight);
 			}
-			
+		}
+		
+		public function displayTimer()
+		{
+			gameTimeField.text = String(timerCount);
+		}
+		
+		function countdown(event:TimerEvent):void 
+		{
+			timerCount = Number((timerCount)-timerCountdownTimer.currentCount);
 		}
 	}
 }

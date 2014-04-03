@@ -36,7 +36,7 @@
  
 		public function onClickRestart( mouseEvent:MouseEvent ):void 
 		{
-			playStage.removeChild(playTimeText);
+			//playStage.removeChild(playTimeText);
  			dispatchEvent( new NavigationEvent(NavigationEvent.RESTART ));
 		}
 		
