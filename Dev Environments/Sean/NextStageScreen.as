@@ -41,7 +41,7 @@
  
 		public function onClickContinue( mouseEvent:MouseEvent ):void 
 		{
-			playStage.removeChild(playTimeText);
+			//playStage.removeChild(playTimeText);
  			dispatchEvent( new NavigationEvent(NavigationEvent.CONTINUE ));
 		}
 		

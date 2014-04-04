@@ -95,14 +95,15 @@
 			{
 				player = new Knight();
 				playerHitbox = player.playerIcon.sheetSam.hitbox;
-				playerSwordHitbox = player.playerIcon.sheetSam.attackHitbox;
-				playerGuardHitbox = player.playerIcon.sheetSam.guardHitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}
 			
 			enemy = new Enemy(new KnightIcon());
+			enemy.enemyType = "Knight";
 			enemyHitbox = enemy.enemyIcon.hitbox;
-			enemySwordHitbox = enemy.enemyIcon.sheetSam.attackHitbox;
-			enemyGuardHitbox = enemy.enemyIcon.sheetSam.guardHitbox;
+			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
+			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
 				
 			gameBackground = new KnightBackground();
 			
@@ -197,7 +198,7 @@
 					playerActionTimer.start();
 				}
 				
-				if(enemy.enemyIcon.currentFrame == 6)
+				if(enemy.enemyAttack == false)
 				{
 					enemy.enemyIcon.stop();
 					enemy.enemyAttack = false;
@@ -207,6 +208,19 @@
 			
 			if (!enemyDead) //Checks if the enemy is dead before checking hits.
 			{
+				if(playerAttack && playerSwordHitbox.hitTestObject(enemySwordHitbox) && enemy.enemyAttack)
+				{
+					var isRepelling:Boolean = true
+					
+					if(isRepelling)
+					{
+						player.playerIcon.x -= 50;
+						enemy.enemyIcon.x += 50;
+						trace("repel");
+						isRepelling = false;
+						enemy.enemyAttack = false;
+					}
+				}
 				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
 				{
 					trace("Enemy killed")
@@ -220,7 +234,11 @@
 						winTimer.start();
 				}
 				
-				if(enemySwordHitbox.hitTestObject(playerHitbox) && !playerWasHit) 
+				if(enemySwordHitbox.hitTestObject(playerGuardHitbox) && player.playerBlock && enemy.enemyAttack)
+				{
+					enemy.enemyIcon.gotoAndStop(6);
+				}
+				else if(enemySwordHitbox.hitTestObject(playerHitbox) && !playerWasHit && enemy.enemyAttack) 
 				{
 						playerWasHit = true;
 						trace("Player died");
@@ -231,24 +249,9 @@
 						loseTimer.start();
 				}
 				
-				else if(enemySwordHitbox.hitTestObject(playerGuardHitbox))
-				{
-					enemy.enemyIcon.gotoAndStop(6);
-				}
+				
 			
-				if(playerAttack && playerSwordHitbox.hitTestObject(enemySwordHitbox))
-				{
-					var isRepelling:Boolean = true
-					
-					if(isRepelling)
-					{
-						player.playerIcon.x -= 50;
-						enemy.enemyIcon.x += 50;
-						trace("repel");
-						isRepelling = false;
-						enemy.enemyAttack = false;
-					}
-				}
+				
 			
 				if(enemyActionTimer.currentCount >= 10)
 				{
@@ -295,7 +298,7 @@
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
-			enemy.enemyIcon.gotoAndPlay(2);
+			//enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}
 	

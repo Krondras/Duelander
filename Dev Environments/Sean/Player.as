@@ -244,19 +244,8 @@
 			}
 			else if(playerType == "Duelist")
 			{
-				if(isMoving)
-				{
-					playerIcon.duelistMask.width = 75;
-					if(playerIcon.sheetSam.x <= -202)
-					{
-						playerIcon.sheetSam.x = -37.5;
-					}
-					else
-					{
-						playerIcon.sheetSam.x -= 78;
-					}
-				}
-				else if(playerAttack)
+				
+				if(playerAttack)
 				{
 					//playerIcon.sheetSam.y = -160;
 					if(playerIcon.sheetSam.x < -37.5-(91*4)+1)
@@ -283,7 +272,19 @@
 
 					}
 				}
-				
+				else if(isMoving)
+				{
+					playerIcon.sheetSam.y = -67.5;
+					playerIcon.duelistMask.width = 75;
+					if(playerIcon.sheetSam.x <= -202)
+					{
+						playerIcon.sheetSam.x = -37.5;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 78;
+					}
+				}
 				else if(playerBlock)
 				{
 					playerIcon.duelistMask.width = 90;
