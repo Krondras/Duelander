@@ -257,7 +257,7 @@
 					//enemyIcon.sheetSam.y = -160;
 					enemyIcon.knightMask.width = 310/3.5;
 					enemyIcon.knightMask.height = 350/3.5;
-					if(enemyIcon.sheetSam.x < -1550/3.5 - 35)
+					if(enemyIcon.sheetSam.x < -1550/3.5 - 35-85)
 					{
 						enemyIcon.sheetSam.x = -35;
 					}
@@ -270,7 +270,7 @@
 					{
 						//moveModTime = 2;
 					}
-					else if(enemyIcon.sheetSam.x == -35 -(85*5))
+					else if(enemyIcon.sheetSam.x <=-1550/3.5 - 35-85)//-35 -(85*5))
 					{
 						//moveModTime = 10;
 						enemyAttack = false;
@@ -308,6 +308,7 @@
 				}
 				else
 				{
+					enemyIcon.sheetSam.y = -62.15;
 					enemyIcon.knightMask.width = 250/3.5;
 					enemyIcon.knightMask.height = 250/3.5;
 					if(enemyIcon.sheetSam.x < -1000/3.5 -34)
