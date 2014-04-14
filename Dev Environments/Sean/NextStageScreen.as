@@ -17,7 +17,7 @@
 			playStage = tempStage;
 			playTimeText.width = 300;
 			playTimeText.height = 100;
-			playTimeText.x = playStage.width/2 - 150;
+			playTimeText.x = playStage.width/2 - 200;
 			playTimeText.y = playStage.height/2 - 75;
 			
 			var timeTextFormat:TextFormat = new TextFormat();
@@ -28,20 +28,19 @@
 			playTimeText.defaultTextFormat = timeTextFormat;
 			playTimeText.selectable = false;
 			
-			playTimeText.text = "Current Time: "+ clockTime(tempPlayTime);
+			playTimeText.text = "Current Time: "+ tempPlayTime + " seconds";
 			
-			/*if (!timeAdded)
+			if (playStage.contains(playTimeText) == false)
 			{
 				playStage.addChild(playTimeText);
-				timeAdded = true;
-			}*/
+			}
 			
 			continueBtn.addEventListener( MouseEvent.CLICK, onClickContinue );
 		}
  
 		public function onClickContinue( mouseEvent:MouseEvent ):void 
 		{
-			//playStage.removeChild(playTimeText);
+			playStage.removeChild(playTimeText);
  			dispatchEvent( new NavigationEvent(NavigationEvent.CONTINUE ));
 		}
 		
