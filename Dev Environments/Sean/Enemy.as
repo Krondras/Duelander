@@ -12,6 +12,7 @@
 		public var enemyType:String;
 		var speed;
 		var actionDelay;
+		private var playerBlock:Boolean;
 		
 		public function Enemy(tempIcon:MovieClip) 
 		{
@@ -48,6 +49,7 @@
 					actionDelay = 12;
 					//trace("Can Now Block");
 				}
+				
 			}	
 			if(isAdvancing)
 			{
@@ -111,7 +113,7 @@
 			if(enemyType == "Samurai")
 			{
 				
-				else if(enemyAttack)
+				if(enemyAttack)
 				{
 					enemyIcon.sheetSam.y = -160;
 					if(enemyIcon.sheetSam.x <= -302)
@@ -125,19 +127,19 @@
 					
 					if(enemyIcon.sheetSam.x == -15)
 					{
-						//moveModTime = 2;
+						////moveModTime = 2;
 					}
 					else if(enemyIcon.sheetSam.x == -303)
 					{
-						//moveModTime = 10;
+						////moveModTime = 10;
 						enemyAttack = false;
 					}
 					else
 					{
-						moveModTime = 0;
+						//moveModTime = 0;
 					}
 				}
-				if(isMoving)
+				if(isAdvancing)
 				{
 					enemyIcon.samuraiMask.width = 48;
 					if(enemyIcon.sheetSam.x <= -202)
@@ -161,7 +163,7 @@
 					}
 					else if(enemyIcon.sheetSam.x == -111)
 					{
-						playerBlock = false;
+						//playerBlock = false;
 					}
 					else
 					{
@@ -195,19 +197,19 @@
 					
 					if(enemyIcon.sheetSam.x == -37.5)
 					{
-						//moveModTime = 2;
+						////moveModTime = 2;
 					}
 					else if(enemyIcon.sheetSam.x == -37.5-(91*4))
 					{
-						moveModTime = 10;
+						//moveModTime = 10;
 						enemyAttack = false;
 					}
 					else
 					{
-						//moveModTime = 0;
+						////moveModTime = 0;
 					}
 				}
-				else if(isMoving)
+				else if(isAdvancing)
 				{
 					enemyIcon.sheetSam.y = -67.5;
 					enemyIcon.duelistMask.width = 75;
@@ -233,7 +235,7 @@
 					}
 					else if(enemyIcon.sheetSam.x == -37.5-(91*2))
 					{
-						playerBlock = false;
+						//playerBlock = false;
 						trace("Got here");
 						//enemyIcon.sheetSam.x = -37.5;
 					}
@@ -247,7 +249,7 @@
 					enemyIcon.duelistMask.width = 75;
 					enemyIcon.sheetSam.y = -67.5;
 					enemyIcon.sheetSam.x = -37.5;
-					moveModTime = 0;
+					//moveModTime = 0;
 				}
 			}
 			if(enemyType == "Knight")
@@ -269,17 +271,17 @@
 					
 					if(enemyIcon.sheetSam.x == -0-35)
 					{
-						//moveModTime = 2;
+						////moveModTime = 2;
 					}
 					else if(enemyIcon.sheetSam.x <=-1550/3.5 - 35-85)//-35 -(85*5))
 					{
-						//moveModTime = 10;
+						////moveModTime = 10;
 						enemyAttack = false;
 						//enemyIcon.knightMask.y += 5;
 					}
 					else
 					{
-						//moveModTime = 0;
+						////moveModTime = 0;
 					}
 				}
 				else if(isBlocking)
@@ -330,7 +332,7 @@
 					//enemyIcon.knightMask.height = 250/3.5;
 					//enemyIcon.sheetSam.y = 0 -70;
 					//enemyIcon.sheetSam.x = 0 -35;
-					//moveModTime = 0;
+					////moveModTime = 0;
 				//}
 			}
 		}

@@ -165,7 +165,7 @@
 		public function update(e)
 		{
 			displayTimer();
-			trace(blockButtonPressed);
+			//trace(blockButtonPressed);
 			
 			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
@@ -451,7 +451,10 @@
 		
 		function countdown(event:TimerEvent):void 
 		{
-			timerValue -= 1;
+			if(!isPaused)
+			{
+				timerValue -= 1;
+			}
 			
 			if (timerValue == 0)
 			{

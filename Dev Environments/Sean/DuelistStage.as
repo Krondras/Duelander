@@ -1,10 +1,5 @@
 ﻿package  {
-
-	/*To do:
-	switch to alex's state-trackings tyle
-	on enemy death, create a NEXT STAGE screen.
-	*/
-
+	
 	import flash.display.*;
 	import flash.utils.*;
 	import flash.events.*
@@ -17,26 +12,38 @@
 
 		public var player:Player;
 		public var playerType:String;
+		public var playerHitbox:MovieClip;
+		public var playerSwordHitbox:MovieClip;
+		public var playerGuardHitbox:MovieClip;
 		
 		public var enemy:Enemy;
 		public var enemyType:String;
+		public var enemyHitbox:MovieClip;
+		public var enemySwordHitbox:MovieClip;
+		public var enemyGuardHitbox:MovieClip;
 		
 		public var keys:Object = new Object(); //Creates an object called keys that will be used to read what keys are being pressed.
 		
 		public var mainStage:Stage;
 		
+		public var timerValue:Number;
+		private var startTimeValue:Number;
+		
 		public var gameTimer:Timer = new Timer(25);
 		public var playerActionTimer:Timer = new Timer(100);
 		public var enemyActionTimer:Timer = new Timer(100);
 		public var preFightTimer:Timer = new Timer(100);
+		public var countdownTimer:Timer = new Timer(1000, timerValue + 1);
+		public var winTimer:Timer = new Timer(100);
+		public var loseTimer:Timer = new Timer(100);
+		
+		public var attackButtonTimer:Timer = new Timer(1000);
+		public var blockButtonTimer:Timer = new Timer(1000);
 		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
-		public var playerAttack:Boolean;//isAttacking 
+		public var playerAttack:Boolean = false;;//isAttacking 
 		public var gamePlaying:Boolean = false;
-		
-		public var timerCount:Number = 30;
-		public var timerCountdownTimer:Timer = new Timer(1000, timerCount);
 		
 		public var playerWasHit:Boolean;//hit the player
 		public var enemyWasHit:Boolean;//hit the enemy
@@ -49,35 +56,61 @@
 		
 		public var gameBackground:MovieClip;
 		
-		public var screenCleared:Boolean = false;
+		public var pauseText:TextField = new TextField();
 		
 		private var gameStartTime:uint;
 		private var gameTimeField:TextField;
 		
 		private var readyText:MovieClip = new ReadyText();
 		private var fightText:MovieClip = new FightText();
-
-		private var enemyPicker:int;
+		private var winText:MovieClip = new WinText();
 		
-		public function DuelistStage(parentStage:Stage, tempPlayerType:String) 
+		private var screenCleared:Boolean = false;
+		
+		private var attackButtonPressed:Boolean = false; //checks to see if the attack button has been pressed
+		private var blockButtonPressed:Boolean = false; //checks to see if the block button has been pressed
+		
+		public function DuelistStage(parentStage:Stage, tempPlayerType:String, tempTimerValue:Number) 
 		{
 			isPaused = false;
 			isMuted = false;
+			playerWasHit = false;
+			
 			enemyWasHit = false;
 			enemyDead = false;
 			playStage = parentStage;
 			playerType = tempPlayerType;
 			
 			if (playerType == "Samurai")
+			{
 				player = new Samurai();
+				playerHitbox = player.playerIcon.hitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
+			}
 				
 			else if (playerType == "Duelist")
+			{
 				player = new Duelist();
+				playerHitbox = player.playerIcon.hitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
+			}
 			
 			else
+			{
 				player = new Knight();
+				playerHitbox = player.playerIcon.hitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
+			}
 			
 			enemy = new Enemy(new DuelistIcon());
+			enemy.enemyType = "Duelist";
+			enemyHitbox = enemy.enemyIcon.hitbox;
+			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
+			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
+				
 			gameBackground = new DuelistBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
@@ -115,23 +148,32 @@
 			playStage.addEventListener(KeyboardEvent.KEY_UP, keyUp); //adds a keyup listener
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
-			timerCountdownTimer.addEventListener(TimerEvent.TIMER, countdown);
+			countdownTimer.addEventListener(TimerEvent.TIMER, countdown);
+			attackButtonTimer.addEventListener(TimerEvent.TIMER, attackButtonTimeout);
+			blockButtonTimer.addEventListener(TimerEvent.TIMER, blockButtonTimeout);
+			
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
+			playStage.addEventListener(Event.ENTER_FRAME, winFight);
+			playStage.addEventListener(Event.ENTER_FRAME, loseFight);
 			
 			playStage.setChildIndex(gameBackground, 1);
+			
+			startTimeValue = tempTimerValue;
+			timerValue = tempTimerValue;
 		}
 		
 		public function update(e)
 		{
 			displayTimer();
+			//trace(blockButtonPressed);
 			
 			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
 				playerActionTimer = player.playerActionTimer;
 				playerAttack = player.playerAttack;
 				player.Update(keys);
-				player.Attack(keys);
-				player.Block(keys);
+				//player.Attack(keys);
+				//player.Block(keys);
 			}
 			
 			if (!enemyDead && !playerWasHit) //Updates the enemy if the player isn't dead.
@@ -139,139 +181,122 @@
 			
 			if (!playerWasHit) //Checks if the player has been hit before updating animations
 			{
-				if(player.playerAttack && player.playerIcon.currentFrame == 6)
+				if(playerAttack && player.playerIcon.currentFrame == 6)
 				{
-					player.playerIcon.stop();
-					player.playerAttack = false;
-					enemyWasHit = false;
+					//player.playerIcon.stop();
 					player.playerActionTimer.start();
 				}
 				
 				if(player.playerBlock && player.playerIcon.currentFrame == 10)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					player.playerBlock = false;
 					player.playerActionTimer.start();
 				}
 				
-				// && enemyWasHit != true
 				if(player.playerBlock && player.playerIcon.currentFrame == 10)
 				{
-					player.playerIcon.stop();
+					//player.playerIcon.stop();
 					player.playerBlock = false;
 					playerActionTimer.start();
 				}
 				if(playerAttack && player.playerIcon.currentFrame == 6)
 				{
-					player.playerIcon.stop();
-					playerAttack = false;
-					enemyWasHit = false;
+					//player.playerIcon.stop();
 					playerActionTimer.start();
 				}
 				
-				if(enemy.enemyIcon.currentFrame == 6)
+				if(enemy.enemyAttack == false)
 				{
 					enemy.enemyIcon.stop();
 					enemy.enemyAttack = false;
-					enemyWasHit = false;
 					enemyActionTimer.start();
 				}
 			}
 			
 			if (!enemyDead) //Checks if the enemy is dead before checking hits.
 			{
-				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && !enemyWasHit) 
+				if(playerAttack && playerSwordHitbox.hitTestObject(enemySwordHitbox) && enemy.enemyAttack)
 				{
-					if(enemy.isBlocking)
+					var isRepelling:Boolean = true
+					
+					if(isRepelling)
 					{
-						player.playerIcon.gotoAndStop(6);
-						//trace("Attack was Blocked");
+						player.playerIcon.x -= 50;
+						enemy.enemyIcon.x += 50;
+						trace("repel");
+						isRepelling = false;
+						enemy.enemyAttack = false;
 					}
-					else
-					{
+				}
+				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
+				{
+					trace("Enemy killed")
+						player.playerIcon.gotoAndStop(0);
 						enemyDead = true;
-						playStage.removeChild(enemy.enemyIcon);
-						playStage.removeChild(enemy);
-						
-						enemyDead = false;
-						
-						enemyPicker = Math.random()*2;
-			
-						if (enemyPicker == 0)
-						{
-							enemy = new Enemy(new KnightIcon());
-							gameBackground = new KnightBackground();
-						}
-						
-						else if (enemyPicker == 1)
-						{
-							enemy = new Enemy(new DuelistIcon());
-							gameBackground = new DuelistBackground();
-						}
-						
-						else
-						{
-							enemy = new Enemy(new SamuraiIcon());
-							gameBackground = new SamuraiBackground();
-						}
-						
-						//playStage.addChild(gameBackground);
-						playStage.addChild(enemy);
-						playStage.addChild(enemy.enemyIcon);	
-						//dispatchEvent(new EnemyEvent(EnemyEvent.ENEMYDEAD));
-					}
-					
+						gamePlaying = false;
+						gameTimer.stop();
+						countdownTimer.stop();
+						enemyWasHit = true;
+						playerActionTimer.stop();
+						enemyActionTimer.stop();
+						winTimer.start();
 				}
-			
 				
-				if(enemy.enemyAttack && enemy.enemyIcon.sword1.hitTestObject(player.playerIcon) && !enemyWasHit)
+				if(enemySwordHitbox.hitTestObject(playerGuardHitbox) && player.playerBlock && enemy.enemyAttack)
 				{
-					if(player.playerBlock)
-					{
-						enemy.enemyIcon.gotoAndStop(6);
-						//trace("Blocked");
-						//enemActionTimer.delay = 200;
-					
-					}
-					else
-					{
+					enemy.enemyIcon.gotoAndStop(6);
+				}
+				
+				else if(enemySwordHitbox.hitTestObject(playerHitbox) && !playerWasHit && enemy.enemyAttack) 
+				{
 						playerWasHit = true;
-						screenClear();
-						dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
-					}
+						trace("Player died");
+						gamePlaying = false;
+						gameTimer.stop();
+						countdownTimer.stop();
+						playerActionTimer.stop();
+						enemyActionTimer.stop();
+						loseTimer.start();
 				}
-			
-				if(playerAttack && player.playerIcon.sword1.hitTestObject(enemy.enemyIcon) && enemy.enemyAttack == true)
-				{
-					player.playerIcon.x -= 50;
-					enemy.enemyIcon.x += 50;
-					trace("repel");
-				}
-			
+				
 				if(enemyActionTimer.currentCount >= 10)
 				{
 					EnemyAttack();
 				}
 			}
-			
-			
 		}
 		
 		public function keyDown(e) // Activates when a key is pressed down
 		{
 			keys[e.keyCode] = true; //Sets the value of key to two things--the keycode of the key being pressed, and the value "true".
 			
+			if(keys[32] && !attackButtonPressed)
+			{
+				attackButtonPressed = true;
+				attackButtonTimer.start();
+				player.Attack(keys);
+			}
+			
+			if(keys[16] && !blockButtonPressed)
+			{
+				blockButtonPressed = true;
+				blockButtonTimer.start();
+				player.Block(keys);
+			}
+			
 			if (keys[80] && !isPaused)
 			{
 				gameTimer.stop();
-				//pauseText.text = "Paused";
+				
+				pauseText.text = "Paused";
 				isPaused = true;
 			}
 			
 			else if (keys[80] && isPaused)
 			{
 				gameTimer.start();
-				//pauseText.text = "";
+				pauseText.text = "";
 				isPaused = false;
 			}
 			
@@ -294,77 +319,182 @@
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
-			enemy.enemyIcon.gotoAndPlay(2);
+			enemy.enemyIcon.sheetSam.y = -152;
+			enemy.enemyIcon.sheetSam.x = -35;
+			//enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}
+	
 		
-		public function screenClear()
+		public function clearScreen()
 		{
 			if (!screenCleared)
 			{
-				gameTimer.stop();
-				playerActionTimer.stop();
-				enemyActionTimer.stop();
 				playStage.removeChild(gameBackground);
+				playStage.removeChild(gameTimeField);
 				playStage.removeChild(player.playerIcon);
 				playStage.removeChild(player);
 				playStage.removeChild(enemy.enemyIcon);
 				playStage.removeChild(enemy);
-				playStage.removeChild(gameTimeField);
 				playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
 				playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 				screenCleared = true;
 			}
 		}
 		
+		public function showTime(event:Event) 
+		{
+			if (gamePlaying && !isPaused)
+			{
+				gameTime = getTimer()-gameStartTime;
+				gameTimeField.text = "Time: "+clockTime(gameTime);
+			}
+		}
+		
+		public function clockTime(ms:int) 
+		{
+			if (gamePlaying && !isPaused)
+			{
+				var seconds:int = Math.floor(ms/1000);
+				var minutes:int = Math.floor(seconds/60);
+				seconds -= minutes*60;
+				var timeString:String = minutes+":"+String(seconds+100).substr(1,2);
+				return timeString;
+			}
+		}
+		
 		public function preFight(e)
 		{
+			//Set ready text position.
 			readyText.x = playStage.stageWidth/2;
 			readyText.y = playStage.stageHeight/2;
 			
+			//Set fight text position.
 			fightText.x = playStage.stageWidth/2;
 			fightText.y = playStage.stageHeight/2;
 			
+			//Start prefight timer.
 			preFightTimer.start();
 			
+			//Display "READY?"
 			if(preFightTimer.currentCount == 5)
 			{
 				readyText.visible = true;
 				readyText.play();
 			}
 			
+			//Hide ready text
 			else if(preFightTimer.currentCount == 25)
 			{
 				readyText.visible = false;
 			}
 			
+			//Show fight text
 			else if(preFightTimer.currentCount == 35)
 			{
 				fightText.visible = true;
 				fightText.play();
 			}
 			
+			//Hide fight text
 			else if(preFightTimer.currentCount == 50)
 			{
 				fightText.visible = false;
 				gameTimer.start();
 				playerActionTimer.start();
 				enemyActionTimer.start();
-				timerCountdownTimer.start();
+				countdownTimer.start();
 				gamePlaying = true;
+				playStage.removeChild(fightText);
+				playStage.removeChild(readyText);
 				preFightTimer.stop();
 				playStage.removeEventListener(Event.ENTER_FRAME, preFight);
 			}
 		}
 		
-		public function displayTimer()
+		public function winFight(e)
 		{
-			gameTimeField.text = String(timerCount);
+			if (winTimer.currentCount == 5)
+			{
+				winText.x = playStage.stageWidth/2 - winText.width;
+				winText.y = playStage.stageHeight/2 - winText.height;
+				//playStage.addChild(winText);
+			}
+			
+			else if (winTimer.currentCount == 50)
+			{
+				dispatchEvent( new NavigationEvent(NavigationEvent.NEXTSTAGE ));
+				clearScreen();
+			}
+		}
+		
+		public function loseFight(e)
+		{
+			if (loseTimer.currentCount == 5)
+			{
+				//winText.x = playStage.stageWidth/2 - winText.width;
+				//winText.y = playStage.stageHeight/2 - winText.height;
+				//playStage.addChild(winText);
+			}
+			
+			else if (loseTimer.currentCount == 50)
+			{
+				dispatchEvent( new PlayerEvent(PlayerEvent.DEAD ));
+				clearScreen();
+			}
+		}
+		
+		function displayTimer()
+		{
+			gameTimeField.text = String(timerValue);
 		}
 		
 		function countdown(event:TimerEvent):void 
 		{
-			timerCount = Number((timerCount)-timerCountdownTimer.currentCount);
+			if(!isPaused)
+			{
+				timerValue -= 1;
+			}
+			
+			if (timerValue == 0)
+			{
+				playerWasHit = true;
+				trace("Player died");
+				gamePlaying = false;
+				gameTimer.stop();
+				countdownTimer.stop();
+				playerActionTimer.stop();
+				enemyActionTimer.stop();
+				loseTimer.start();
+			}
+		}
+		
+		function getRemainingTime()
+		{
+			return (timerValue);
+		}
+		
+		function getTimeElapsed()
+		{
+			return (startTimeValue - timerValue);
+		}
+		
+		function attackButtonTimeout(event:TimerEvent):void
+		{
+			if (!keys[32])
+			{
+				attackButtonPressed = false;
+				attackButtonTimer.stop();
+			}
+		}
+		
+		function blockButtonTimeout(event:TimerEvent):void
+		{
+			if (!keys[16])
+			{
+				blockButtonPressed = false;
+				blockButtonTimer.stop();
+			}
 		}
 	}
 }

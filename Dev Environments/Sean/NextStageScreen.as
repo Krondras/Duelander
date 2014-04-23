@@ -40,24 +40,50 @@
 			playTimeText.text = "Current Time: "+ tempPlayTime + " second(s)";
 			enemiesKilledText.text = tempEnemiesKilled + " rival(s) defeated";
 			
-			if (playStage.contains(playTimeText) == false)
+			var textAdded:Boolean = false;
+			
+			if (!textAdded)
 			{
 				playStage.addChild(playTimeText);
-			}
-			
-			if (playStage.contains(enemiesKilledText) == false)
-			{
+				trace("Play time added");
 				playStage.addChild(enemiesKilledText);
+				trace("Enemy count added");
+				textAdded = true;
 			}
 			
-			continueBtn.addEventListener( MouseEvent.CLICK, onClickContinue );
+			continueBtn.addEventListener( MouseEvent.CLICK, onClickContinue);
+			mainMenuBtn.addEventListener( MouseEvent.CLICK, onClickMenu);
+			submitScoreBtn.addEventListener( MouseEvent.CLICK, onClickSubmit);
 		}
  
 		public function onClickContinue( mouseEvent:MouseEvent ):void 
 		{
-			playStage.removeChild(playTimeText);
-			playStage.removeChild(enemiesKilledText);
+			clearScreen();
  			dispatchEvent( new NavigationEvent(NavigationEvent.CONTINUE ));
 		}
+		
+		public function onClickSubmit( mouseEvent:MouseEvent ):void 
+		{
+			clearScreen();
+ 			dispatchEvent( new NavigationEvent(NavigationEvent.TOSUBMIT ));
+		}
+		
+		public function onClickMenu( mouseEvent:MouseEvent ):void 
+		{
+			clearScreen();
+			
+			if(!playStage.contains(playTimeText) && !playStage.contains(enemiesKilledText))
+ 				dispatchEvent( new NavigationEvent(NavigationEvent.TOMENU ));
+		}
+		
+		
+		public function clearScreen()
+		{
+			playTimeText.text = "";
+			enemiesKilledText.text =" ";
+			playStage.removeChild(playTimeText);
+			playStage.removeChild(enemiesKilledText);
+		}
+		
 	}
 }
