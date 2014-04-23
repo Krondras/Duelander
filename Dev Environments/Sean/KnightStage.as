@@ -84,6 +84,9 @@
 			if (playerType == "Samurai")
 			{
 				player = new Samurai();
+				playerHitbox = player.playerIcon.hitbox;
+				playerSwordHitbox = player.playerIcon.attackHitbox;
+				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}
 				
 			else if (playerType == "Duelist")
@@ -97,7 +100,7 @@
 			else
 			{
 				player = new Knight();
-				playerHitbox = player.playerIcon.sheetSam.hitbox;
+				playerHitbox = player.playerIcon.hitbox;
 				playerSwordHitbox = player.playerIcon.attackHitbox;
 				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}

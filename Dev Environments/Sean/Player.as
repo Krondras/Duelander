@@ -175,19 +175,8 @@
 		{
 			if(playerType == "Samurai")
 			{
-				if(isMoving)
-				{
-					playerIcon.samuraiMask.width = 48;
-					if(playerIcon.sheetSam.x <= -202)
-					{
-						playerIcon.sheetSam.x = -15;
-					}
-					else
-					{
-						playerIcon.sheetSam.x -= 48;
-					}
-				}
-				else if(playerAttack)
+				
+				if(playerAttack)
 				{
 					playerIcon.sheetSam.y = -160;
 					if(playerIcon.sheetSam.x <= -302)
@@ -211,6 +200,19 @@
 					else
 					{
 						moveModTime = 0;
+					}
+				}
+				else if(isMoving)
+				{
+					playerIcon.samuraiMask.width = 48;
+					playerIcon.sheetSam.y = -80;
+					if(playerIcon.sheetSam.x <= -202)
+					{
+						playerIcon.sheetSam.x = -15;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 48;
 					}
 				}
 				else if(playerBlock)
@@ -317,20 +319,8 @@
 			}
 			else if(playerType == "Knight")
 			{
-				if(isMoving)
-				{
-					playerIcon.knightMask.width = 250/3.5;
-					playerIcon.knightMask.height = 250/3.5;
-					if(playerIcon.sheetSam.x < -1000/3.5 -34)
-					{
-						playerIcon.sheetSam.x = 0-35;
-					}
-					else
-					{
-						playerIcon.sheetSam.x -= 250/3.5;
-					}
-				}
-				else if(playerAttack)
+				
+				if(playerAttack)
 				{
 					
 					//playerIcon.sheetSam.y = -160;
@@ -358,6 +348,20 @@
 					else
 					{
 						moveModTime = 0;
+					}
+				}
+				else if(isMoving)
+				{
+					playerIcon.knightMask.width = 250/3.5;
+					playerIcon.knightMask.height = 250/3.5;
+					playerIcon.sheetSam.y = -70;
+					if(playerIcon.sheetSam.x < -1000/3.5 -34)
+					{
+						playerIcon.sheetSam.x = 0-35;
+					}
+					else
+					{
+						playerIcon.sheetSam.x -= 250/3.5;
 					}
 				}
 				else if(playerBlock)

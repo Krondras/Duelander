@@ -108,20 +108,9 @@
 		}
 		public function EnemySpriteUpdate()
 		{
-			/*if(enemyType == "Samurai")
+			if(enemyType == "Samurai")
 			{
-				if(isMoving)
-				{
-					enemyIcon.samuraiMask.width = 48;
-					if(enemyIcon.sheetSam.x <= -202)
-					{
-						enemyIcon.sheetSam.x = -15;
-					}
-					else
-					{
-						enemyIcon.sheetSam.x -= 48;
-					}
-				}
+				
 				else if(enemyAttack)
 				{
 					enemyIcon.sheetSam.y = -160;
@@ -146,6 +135,18 @@
 					else
 					{
 						moveModTime = 0;
+					}
+				}
+				if(isMoving)
+				{
+					enemyIcon.samuraiMask.width = 48;
+					if(enemyIcon.sheetSam.x <= -202)
+					{
+						enemyIcon.sheetSam.x = -15;
+					}
+					else
+					{
+						enemyIcon.sheetSam.x -= 48;
 					}
 				}
 				else if(playerBlock)
@@ -248,7 +249,7 @@
 					enemyIcon.sheetSam.x = -37.5;
 					moveModTime = 0;
 				}
-			}*/
+			}
 			if(enemyType == "Knight")
 			{
 				if(enemyAttack)
