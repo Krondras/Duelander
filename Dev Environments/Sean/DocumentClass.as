@@ -12,12 +12,14 @@
 		public var selectScreen:SelectScreen; //container for the character selection
 		public var playScreen:MovieClip; //container variable for the play screen
 		public var gameOverScreen:GameOverScreen; //container variable for the game over screen.
-		public var nextStageScreen:NextStageScreen;
+		public var nextStageScreen:NextStageScreen; // container variable for the next stage screen.
 		
 		public var playerType:String; //Remembers the character that the player selected.
+		
 		public var remainingTime:int; //How much time's left.
 		public var finalPlayTime:int; //Remembers the final play time that the player achieved.
- 		
+ 		public var numEnemiesKilled:int; //Remembers the number of enemies killed.
+		
 		public var enemyPicker:int = 0//Math.random()*2;
 		
 		public function DocumentClass() //Initializes the title screen when you first open the game.
@@ -61,6 +63,7 @@
 			{
 				finalPlayTime += playScreen.getTimeElapsed();
 				remainingTime = playScreen.timerValue;
+				numEnemiesKilled += 1;
 				trace(finalPlayTime);
 				loadNextStage();
 			}
@@ -73,7 +76,7 @@
 				finalPlayTime += playScreen.getTimeElapsed();
 			}
 			
-			gameOverScreen = new GameOverScreen(stage, finalPlayTime); //creates the game over screen
+			gameOverScreen = new GameOverScreen(stage, finalPlayTime, numEnemiesKilled); //creates the game over screen
 			addChild( gameOverScreen ); //adds the game over screen to the stage
 		 	gameOverScreen.addEventListener( NavigationEvent.RESTART, onRequestRestart ); //adds a listener for the game to restart (see GameOverScreen.as)
 			playScreen = null; //removes the play screen.
@@ -114,7 +117,7 @@
 		
 		public function loadNextStage():void //loads the next level
 		{
-			nextStageScreen = new NextStageScreen(stage, finalPlayTime); //creates a new select screen
+			nextStageScreen = new NextStageScreen(stage, finalPlayTime, numEnemiesKilled); //creates a new select screen
 			nextStageScreen.addEventListener( NavigationEvent.CONTINUE, onRequestContinue );//waits for the player to pick a character
 			addChild( nextStageScreen );//adds the select screen back to the stage
 		 

@@ -33,9 +33,12 @@
 		public var playerActionTimer:Timer = new Timer(100);
 		public var enemyActionTimer:Timer = new Timer(100);
 		public var preFightTimer:Timer = new Timer(100);
-		public var countdownTimer:Timer = new Timer(1000, timerValue);
+		public var countdownTimer:Timer = new Timer(1000, timerValue + 1);
 		public var winTimer:Timer = new Timer(100);
 		public var loseTimer:Timer = new Timer(100);
+		
+		public var attackButtonTimer:Timer = new Timer(1000);
+		public var blockButtonTimer:Timer = new Timer(1000);
 		
 		public var isPaused:Boolean;
 		public var isMuted:Boolean;
@@ -63,6 +66,9 @@
 		private var winText:MovieClip = new WinText();
 		
 		private var screenCleared:Boolean = false;
+		
+		private var attackButtonPressed:Boolean = false; //checks to see if the attack button has been pressed
+		private var blockButtonPressed:Boolean = false; //checks to see if the block button has been pressed
 		
 		public function KnightStage(parentStage:Stage, tempPlayerType:String, tempTimerValue:Number) 
 		{
@@ -140,6 +146,9 @@
 			
 			gameTimer.addEventListener(TimerEvent.TIMER, update );
 			countdownTimer.addEventListener(TimerEvent.TIMER, countdown);
+			attackButtonTimer.addEventListener(TimerEvent.TIMER, attackButtonTimeout);
+			blockButtonTimer.addEventListener(TimerEvent.TIMER, blockButtonTimeout);
+			
 			playStage.addEventListener(Event.ENTER_FRAME, preFight);
 			playStage.addEventListener(Event.ENTER_FRAME, winFight);
 			playStage.addEventListener(Event.ENTER_FRAME, loseFight);
@@ -153,20 +162,15 @@
 		public function update(e)
 		{
 			displayTimer();
-			
-			/*if(playerSwordHitbox.hitTestObject(enemyHitbox))
-			   {
-				   trace("Stab!");
-			   }
-			*/
+			trace(blockButtonPressed);
 			
 			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
 				playerActionTimer = player.playerActionTimer;
 				playerAttack = player.playerAttack;
 				player.Update(keys);
-				player.Attack(keys);
-				player.Block(keys);
+				//player.Attack(keys);
+				//player.Block(keys);
 			}
 			
 			if (!enemyDead && !playerWasHit) //Updates the enemy if the player isn't dead.
@@ -240,6 +244,7 @@
 				{
 					enemy.enemyIcon.gotoAndStop(6);
 				}
+				
 				else if(enemySwordHitbox.hitTestObject(playerHitbox) && !playerWasHit && enemy.enemyAttack) 
 				{
 						playerWasHit = true;
@@ -252,10 +257,6 @@
 						loseTimer.start();
 				}
 				
-				
-			
-				
-			
 				if(enemyActionTimer.currentCount >= 10)
 				{
 					EnemyAttack();
@@ -266,6 +267,20 @@
 		public function keyDown(e) // Activates when a key is pressed down
 		{
 			keys[e.keyCode] = true; //Sets the value of key to two things--the keycode of the key being pressed, and the value "true".
+			
+			if(keys[32] && !attackButtonPressed)
+			{
+				attackButtonPressed = true;
+				attackButtonTimer.start();
+				player.Attack(keys);
+			}
+			
+			if(keys[16] && !blockButtonPressed)
+			{
+				blockButtonPressed = true;
+				blockButtonTimer.start();
+				player.Block(keys);
+			}
 			
 			if (keys[80] && !isPaused)
 			{
@@ -434,6 +449,18 @@
 		function countdown(event:TimerEvent):void 
 		{
 			timerValue -= 1;
+			
+			if (timerValue == 0)
+			{
+				playerWasHit = true;
+				trace("Player died");
+				gamePlaying = false;
+				gameTimer.stop();
+				countdownTimer.stop();
+				playerActionTimer.stop();
+				enemyActionTimer.stop();
+				loseTimer.start();
+			}
 		}
 		
 		function getRemainingTime()
@@ -444,6 +471,24 @@
 		function getTimeElapsed()
 		{
 			return (startTimeValue - timerValue);
+		}
+		
+		function attackButtonTimeout(event:TimerEvent):void
+		{
+			if (!keys[32])
+			{
+				attackButtonPressed = false;
+				attackButtonTimer.stop();
+			}
+		}
+		
+		function blockButtonTimeout(event:TimerEvent):void
+		{
+			if (!keys[16])
+			{
+				blockButtonPressed = false;
+				blockButtonTimer.stop();
+			}
 		}
 	}
 }
