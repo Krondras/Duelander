@@ -1,10 +1,5 @@
 ﻿package  {
-
-	/*To do:
-	switch to alex's state-trackings tyle
-	on enemy death, create a NEXT STAGE screen.
-	*/
-
+	
 	import flash.display.*;
 	import flash.utils.*;
 	import flash.events.*
@@ -31,11 +26,13 @@
 		
 		public var mainStage:Stage;
 		
+		public var timerValue:Number;
+		private var startTimeValue:Number;
+		
 		public var gameTimer:Timer = new Timer(25);
 		public var playerActionTimer:Timer = new Timer(100);
 		public var enemyActionTimer:Timer = new Timer(100);
 		public var preFightTimer:Timer = new Timer(100);
-		public var timerValue:Number = 30;
 		public var countdownTimer:Timer = new Timer(1000, timerValue);
 		public var winTimer:Timer = new Timer(100);
 		public var loseTimer:Timer = new Timer(100);
@@ -67,7 +64,7 @@
 		
 		private var screenCleared:Boolean = false;
 		
-		public function KnightStage(parentStage:Stage, tempPlayerType:String) 
+		public function KnightStage(parentStage:Stage, tempPlayerType:String, tempTimerValue:Number) 
 		{
 			isPaused = false;
 			isMuted = false;
@@ -148,16 +145,20 @@
 			playStage.addEventListener(Event.ENTER_FRAME, loseFight);
 			
 			playStage.setChildIndex(gameBackground, 1);
+			
+			startTimeValue = tempTimerValue;
+			timerValue = tempTimerValue;
 		}
 		
 		public function update(e)
 		{
 			displayTimer();
 			
-			if(playerSwordHitbox.hitTestObject(enemyHitbox))
+			/*if(playerSwordHitbox.hitTestObject(enemyHitbox))
 			   {
 				   trace("Stab!");
 			   }
+			*/
 			
 			if (!playerWasHit) //Updates the player's listeners while they're still alive.
 			{
@@ -228,6 +229,7 @@
 						enemyDead = true;
 						gamePlaying = false;
 						gameTimer.stop();
+						countdownTimer.stop();
 						enemyWasHit = true;
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
@@ -244,6 +246,7 @@
 						trace("Player died");
 						gamePlaying = false;
 						gameTimer.stop();
+						countdownTimer.stop();
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
 						loseTimer.start();
@@ -430,7 +433,17 @@
 		
 		function countdown(event:TimerEvent):void 
 		{
-			timerValue = Number((timerValue)-1);
+			timerValue -= 1;
+		}
+		
+		function getRemainingTime()
+		{
+			return (timerValue);
+		}
+		
+		function getTimeElapsed()
+		{
+			return (startTimeValue - timerValue);
 		}
 	}
 }

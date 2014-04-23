@@ -15,17 +15,16 @@
 		public var nextStageScreen:NextStageScreen;
 		
 		public var playerType:String; //Remembers the character that the player selected.
+		public var remainingTime:int; //How much time's left.
 		public var finalPlayTime:int; //Remembers the final play time that the player achieved.
  		
 		public var enemyPicker:int = 0//Math.random()*2;
-		private var updateTimer:Timer = new Timer(100);
 		
 		public function DocumentClass() //Initializes the title screen when you first open the game.
 		{
 			titleScreen = new TitleScreen(); //creates the title screen
 			titleScreen.addEventListener( NavigationEvent.CHARSELECT, onRequestCharSelect ); //adds a listener for the game to start (see TitleScreen.as)
 			addChild( titleScreen ); //Adds the title screen to the stage.
-			updateTimer.start();
 		}
 		
 		public function onRequestCharSelect( navigationEvent:NavigationEvent ):void
@@ -42,7 +41,7 @@
 			playerType = selectScreen.playerType;
 			
 			if (enemyPicker == 0)
-				playScreen = new KnightStage(stage, playerType); //creates the gameplay screen
+				playScreen = new KnightStage(stage, playerType, 30); //creates the gameplay screen
 			
 			else if (enemyPicker == 1)
 				playScreen = new DuelistStage(stage, playerType); //creates the gameplay screen
@@ -53,17 +52,27 @@
 			playScreen.addEventListener(PlayerEvent.DEAD, onPlayerDeath ); //adds a listener for the player to die 
 			playScreen.addEventListener(NavigationEvent.NEXTSTAGE, onPlayerWin);
 			addChild( playScreen ); //adds the play screen to the stage
-		 	finalPlayTime += playScreen.gameTime;
 			selectScreen = null; //removes the select screen.
 		}
 		
 		public function onPlayerWin( navigationEvent:NavigationEvent ):void
 		{
-			loadNextStage();
+			if (playScreen != null)
+			{
+				finalPlayTime += playScreen.getTimeElapsed();
+				remainingTime = playScreen.timerValue;
+				trace(finalPlayTime);
+				loadNextStage();
+			}
 		}
 		
 		public function onPlayerDeath( playerEvent:PlayerEvent ):void //Changes to the game over screen when the player dies.
 		{
+			if (playScreen != null)
+			{
+				finalPlayTime += playScreen.getTimeElapsed();
+			}
+			
 			gameOverScreen = new GameOverScreen(stage, finalPlayTime); //creates the game over screen
 			addChild( gameOverScreen ); //adds the game over screen to the stage
 		 	gameOverScreen.addEventListener( NavigationEvent.RESTART, onRequestRestart ); //adds a listener for the game to restart (see GameOverScreen.as)
@@ -75,11 +84,10 @@
 			restartGame(); //runs the restartGame function right below this one.
 		}
 		
-		
 		public function onRequestContinue(navigationEvent:NavigationEvent): void
 		{
 			if (enemyPicker == 0)
-				playScreen = new KnightStage(stage, playerType); //creates the gameplay screen
+				playScreen = new KnightStage(stage, playerType, remainingTime); //creates the gameplay screen
 			
 			else if (enemyPicker == 1)
 				playScreen = new DuelistStage(stage, playerType); //creates the gameplay screen
@@ -90,7 +98,7 @@
 			playScreen.addEventListener(PlayerEvent.DEAD, onPlayerDeath ); //adds a listener for the player to die 
 			playScreen.addEventListener(NavigationEvent.NEXTSTAGE, onPlayerWin);
 			addChild( playScreen ); //adds the play screen to the stage
-		 
+		 	
 			nextStageScreen = null; //removes the select screen.
 
 		}

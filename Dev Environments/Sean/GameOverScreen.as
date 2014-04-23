@@ -10,13 +10,14 @@
 	{
 		public var playStage:Stage;
 		private var playTimeText:TextField = new TextField();
+		private var timeAdded:Boolean = false;
 		
 		public function GameOverScreen(tempStage:Stage, tempPlayTime:uint) 
 		{
 			playStage = tempStage;
-			playTimeText.width = 300;
+			playTimeText.width = 400;
 			playTimeText.height = 100;
-			playTimeText.x = playStage.width/2 - 150;
+			playTimeText.x = playStage.width/2 - 200;
 			playTimeText.y = playStage.height/2 - 75;
 			
 			var timeTextFormat:TextFormat = new TextFormat();
@@ -27,16 +28,19 @@
 			playTimeText.defaultTextFormat = timeTextFormat;
 			playTimeText.selectable = false;
 			
-			playTimeText.text = "Final Time: "+ clockTime(tempPlayTime);
+			playTimeText.text = "Final Time: "+ tempPlayTime + " seconds";
 			
-			//playStage.addChild(playTimeText);
+			if (playStage.contains(playTimeText) == false)
+			{
+				playStage.addChild(playTimeText);
+			}
 			
 			retryBtn.addEventListener( MouseEvent.CLICK, onClickRestart );
 		}
  
 		public function onClickRestart( mouseEvent:MouseEvent ):void 
 		{
-			//playStage.removeChild(playTimeText);
+			playStage.removeChild(playTimeText);
  			dispatchEvent( new NavigationEvent(NavigationEvent.RESTART ));
 		}
 		
