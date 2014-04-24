@@ -18,7 +18,7 @@
 		{
 			submitBtn.addEventListener(MouseEvent.CLICK, onClickSubmit);
 			confirmTimer.addEventListener(TimerEvent.TIMER, goToMainMenu);
-			netConnection.connect("http://localhost/Amfphp/ExampleService.php");
+			netConnection.connect("http://localhost/amfphp-2.2/amfphp-2.2/Amfphp/Services/ExampleService.php");
 			score = tempEnemiesKilled;
 			time = tempPlayerTime;
 		}
