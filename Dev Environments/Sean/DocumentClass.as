@@ -190,7 +190,9 @@
 		{
 			var levelOK:Boolean = false;
 			
-			while(levelOK == false)
+			enemyPicker = Math.random()*3;
+			
+			/*while(levelOK == false)
 			{
 				enemyPicker = Math.random()*3;
 				
@@ -205,7 +207,7 @@
 					
 				else
 					levelOK = true;
-			}
+			}**/
 		}
 	}
 }

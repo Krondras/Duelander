@@ -58,6 +58,23 @@
 		
 		public var pauseText:TextField = new TextField();
 		
+		public var duelistSwing:DuelistSwingSound = new DuelistSwingSound();
+		public var samuraiSwing:SamuraiSwingSound = new SamuraiSwingSound();
+		public var knightSwing:KnightSwingSound = new KnightSwingSound();
+		public var duelistCut:DuelistCutSound = new DuelistCutSound();
+		public var samuraiCut:SamuraiCutSound = new SamuraiCutSound();
+		public var knightCut:KnightCutSound = new KnightCutSound();
+		public var duelistAttack:DuelistAttack = new DuelistAttack();
+		public var samuraiAttack:SamuraiAttack = new SamuraiAttack();
+		public var knightAttack:KnightAttack = new KnightAttack();
+		public var duelistKO:DuelistKO = new DuelistKO();
+		public var samuraiKO:SamuraiKO = new SamuraiKO();
+		public var knightKO:KnightKO = new KnightKO();
+		public var parrySound:ParrySound = new ParrySound();
+		
+		public var sfxSoundChannel:SoundChannel;	//sfx for Sound FX
+		public var voiceSoundChannel:SoundChannel; //voices
+		
 		private var gameStartTime:uint;
 		private var gameTimeField:TextField;
 		
@@ -81,9 +98,9 @@
 			playStage = parentStage;
 			playerType = tempPlayerType;
 			
-			if (playerType == "Knight")
+			if (playerType == "Samurai")
 			{
-				player = new Knight();
+				player = new Samurai();
 				playerHitbox = player.playerIcon.hitbox;
 				playerSwordHitbox = player.playerIcon.attackHitbox;
 				playerGuardHitbox = player.playerIcon.guardHitbox;
@@ -99,19 +116,19 @@
 			
 			else
 			{
-				player = new Samurai();
+				player = new Knight();
 				playerHitbox = player.playerIcon.hitbox;
 				playerSwordHitbox = player.playerIcon.attackHitbox;
 				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}
 			
-			enemy = new Enemy(new SamuraiIcon());
-			enemy.enemyType = "Samurai";
+			enemy = new Enemy(new KnightIcon());
+			enemy.enemyType = "Knight";
 			enemyHitbox = enemy.enemyIcon.hitbox;
 			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
 			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
 				
-			gameBackground = new SamuraiBackground();
+			gameBackground = new KnightBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
 			
@@ -179,7 +196,7 @@
 			if (!enemyDead && !playerWasHit) //Updates the enemy if the player isn't dead.
 				enemy.Update(player);
 			
-			if (!playerWasHit) //Checks if the player has been hit before updating animations
+			if (!playerWasHit && gamePlaying) //Checks if the player has been hit before updating animations
 			{
 				if(playerAttack && player.playerIcon.currentFrame == 6)
 				{
@@ -225,13 +242,23 @@
 						player.playerIcon.x -= 50;
 						enemy.enemyIcon.x += 50;
 						trace("repel");
+						sfxSoundChannel = parrySound.play();
 						isRepelling = false;
 						enemy.enemyAttack = false;
 					}
 				}
 				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
 				{
-					trace("Enemy killed")
+						trace("Enemy killed")
+						
+						sfxSoundChannel = samuraiKO.play();
+						if(playerType == "Duelist")
+							sfxSoundChannel = duelistCut.play();
+						else if(playerType == "Samurai")
+							sfxSoundChannel = samuraiCut.play();
+						else
+							sfxSoundChannel = knightCut.play();
+							
 						player.playerIcon.gotoAndStop(0);
 						enemyDead = true;
 						gamePlaying = false;
@@ -252,6 +279,17 @@
 				{
 						playerWasHit = true;
 						trace("Player died");
+						
+						sfxSoundChannel = samuraiCut.play();
+						if(playerType == "Duelist")
+							sfxSoundChannel = duelistKO.play();
+						else if(playerType == "Samurai")
+							sfxSoundChannel = samuraiKO.play();
+						else
+							sfxSoundChannel = knightKO.play();
+						
+						playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
+						playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 						gamePlaying = false;
 						gameTimer.stop();
 						countdownTimer.stop();
@@ -262,6 +300,8 @@
 				
 				if(enemyActionTimer.currentCount >= 10)
 				{
+					sfxSoundChannel = samuraiSwing.play();
+					sfxSoundChannel = samuraiAttack.play();
 					EnemyAttack();
 				}
 			}
@@ -275,6 +315,21 @@
 			{
 				attackButtonPressed = true;
 				attackButtonTimer.start();
+				
+				if(playerType == "Duelist")
+					sfxSoundChannel = duelistSwing.play();
+				else if(playerType == "Samurai")
+					sfxSoundChannel = samuraiSwing.play();
+				else
+					sfxSoundChannel = knightSwing.play();
+				
+				if(playerType == "Duelist")
+					sfxSoundChannel = duelistAttack.play();
+				else if(playerType == "Samurai")
+					sfxSoundChannel = samuraiAttack.play();
+				else
+					sfxSoundChannel = knightAttack.play();
+					
 				player.Attack(keys);
 			}
 			
@@ -319,8 +374,8 @@
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
-			enemy.enemyIcon.sheetSam.y = -160;
-			enemy.enemyIcon.sheetSam.x = -15;
+			enemy.enemyIcon.sheetSam.y = -152;
+			enemy.enemyIcon.sheetSam.x = -35;
 			//enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}
@@ -336,8 +391,6 @@
 				playStage.removeChild(player);
 				playStage.removeChild(enemy.enemyIcon);
 				playStage.removeChild(enemy);
-				playStage.removeEventListener(KeyboardEvent.KEY_DOWN, keyDown);
-				playStage.removeEventListener(KeyboardEvent.KEY_UP, keyUp);
 				screenCleared = true;
 			}
 		}
