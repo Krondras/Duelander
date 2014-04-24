@@ -319,8 +319,8 @@
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
-			enemy.enemyIcon.sheetSam.y = -152;
-			enemy.enemyIcon.sheetSam.x = -35;
+			enemy.enemyIcon.sheetSam.y = -160;
+			enemy.enemyIcon.sheetSam.x = -15;
 			//enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}

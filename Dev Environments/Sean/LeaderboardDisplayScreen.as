@@ -9,6 +9,8 @@
 	public class LeaderboardDisplayScreen extends MovieClip 
 	{
 		public var playStage:Stage;
+		private var playTime:int;
+		private var enemiesKilled:int;
 		private var playTimeText:TextField = new TextField();
 		private var enemiesKilledText:TextField = new TextField();
 		private var timeAdded:Boolean = false;
@@ -16,6 +18,7 @@
 		public function LeaderboardDisplayScreen(tempStage:Stage) 
 		{
 			mainMenuBtn.addEventListener( MouseEvent.CLICK, onClickMenu);
+			
 		}
  
 		public function onClickMenu( mouseEvent:MouseEvent ):void 

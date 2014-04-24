@@ -116,6 +116,7 @@
 				if(enemyAttack)
 				{
 					enemyIcon.sheetSam.y = -160;
+					enemyIcon.samuraiMask.width = 72;
 					if(enemyIcon.sheetSam.x <= -302)
 					{
 						enemyIcon.sheetSam.x = -15;
@@ -139,9 +140,10 @@
 						//moveModTime = 0;
 					}
 				}
-				if(isAdvancing)
+				else if(isAdvancing)
 				{
 					enemyIcon.samuraiMask.width = 48;
+					enemyIcon.sheetSam.y = -80;
 					if(enemyIcon.sheetSam.x <= -202)
 					{
 						enemyIcon.sheetSam.x = -15;
@@ -154,7 +156,7 @@
 				else if(playerBlock)
 				{
 					enemyIcon.samuraiMask.width = 48;
-					
+					enemyIcon.sheetSam.y = -240;
 					if(enemyIcon.sheetSam.x <= -112)
 					{
 						

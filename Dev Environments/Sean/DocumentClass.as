@@ -143,7 +143,7 @@
 		
 		public function goToSubmitScreen():void //restarts the game
 		{
-			submitScreen = new ScoreSubmissionScreen(); //creates a new select screen
+			submitScreen = new ScoreSubmissionScreen(numEnemiesKilled,finalPlayTime); //creates a new select screen
 			submitScreen.addEventListener( NavigationEvent.SUBMITTED, onRequestSubmitted );//waits for the player to submit a score or quit
 			addChild( submitScreen );//adds the submit screen back to the stage
 		
@@ -192,7 +192,7 @@
 			
 			while(levelOK == false)
 			{
-				enemyPicker = 2//Math.random()*3;
+				enemyPicker = Math.random()*3;
 				
 				if (playerType == "Samurai" && enemyPicker == 2)
 					enemyPicker = Math.random()*3;
