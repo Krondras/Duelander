@@ -42,6 +42,8 @@
 			isMoving = false;
 			playerIcon.x = 120;
 			playerIcon.y = 370;
+			playerIcon.height = playerIcon.height*2;
+			playerIcon.width = playerIcon.width*2;
 			playerIcon.stop();
 		}
 		

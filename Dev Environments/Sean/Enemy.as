@@ -22,7 +22,10 @@
 			enemyIcon = tempIcon;
 			enemyIcon.x = 380;
 			enemyIcon.y = 370;
+			enemyIcon.height = enemyIcon.height*2;
+			enemyIcon.width = enemyIcon.width*2;
 			enemyIcon.scaleX *= -1;
+			
 			enemyIcon.stop();
 			speed = 1;
 			isBlocking = false;
@@ -115,8 +118,11 @@
 				
 				if(enemyAttack)
 				{
-					enemyIcon.sheetSam.y = -160;
 					enemyIcon.samuraiMask.width = 72;
+					if((enemyIcon.sheetSam.x+15)%72 != 0)
+						enemyIcon.sheetSam.x = -15;
+					enemyIcon.sheetSam.y = -160;
+					
 					if(enemyIcon.sheetSam.x <= -302)
 					{
 						enemyIcon.sheetSam.x = -15;
@@ -130,9 +136,12 @@
 					{
 						////moveModTime = 2;
 					}
-					else if(enemyIcon.sheetSam.x == -303)
+					else if(enemyIcon.sheetSam.x <= -302)
 					{
 						////moveModTime = 10;
+						enemyIcon.samuraiMask.width = 48;
+						enemyIcon.sheetSam.y = -80;
+						enemyIcon.sheetSam.x = -15;
 						enemyAttack = false;
 					}
 					else

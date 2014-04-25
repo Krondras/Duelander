@@ -55,7 +55,7 @@
 		public var gameTime:uint; //Game time, in ms
 		
 		public var gameBackground:MovieClip;
-		
+		public var blood:MovieClip;
 		public var pauseText:TextField = new TextField();
 		
 		public var duelistSwing:DuelistSwingSound = new DuelistSwingSound();
@@ -127,7 +127,9 @@
 			enemyHitbox = enemy.enemyIcon.hitbox;
 			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
 			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
-				
+				blood = new Blood();
+			blood.width = 20;
+			blood.height = 20;
 			gameBackground = new SamuraiBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
@@ -250,7 +252,10 @@
 				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
 				{
 						trace("Enemy killed")
-						
+						playStage.addChild(blood)
+						blood.x = enemyHitbox.x+ 250;
+						blood.y = enemyHitbox.y+ 200;
+						blood.play();
 						sfxSoundChannel = samuraiKO.play();
 						if(playerType == "Duelist")
 							sfxSoundChannel = duelistCut.play();
@@ -268,6 +273,7 @@
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
 						winTimer.start();
+						player.isMoving = false;
 				}
 				
 				if(enemySwordHitbox.hitTestObject(playerGuardHitbox) && player.playerBlock && enemy.enemyAttack)
@@ -279,7 +285,10 @@
 				{
 						playerWasHit = true;
 						trace("Player died");
-						
+						playStage.addChild(blood)
+						blood.x = playerHitbox.x+ 200;
+						blood.y = playerHitbox.y+ 250;
+						blood.play();
 						sfxSoundChannel = samuraiCut.play();
 						if(playerType == "Duelist")
 							sfxSoundChannel = duelistKO.play();
@@ -296,6 +305,7 @@
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
 						loseTimer.start();
+						player.isMoving = false;
 				}
 				
 				if(enemyActionTimer.currentCount >= 10)
@@ -374,8 +384,8 @@
 		public function EnemyAttack()
 		{
 			enemy.enemyAttack = true;
-			enemy.enemyIcon.sheetSam.y = -152;
-			enemy.enemyIcon.sheetSam.x = -35;
+			//enemy.enemyIcon.sheetSam.y = -152;
+			//enemy.enemyIcon.sheetSam.x = -35;
 			//enemy.enemyIcon.gotoAndPlay(2);
 			enemyActionTimer.reset();
 		}

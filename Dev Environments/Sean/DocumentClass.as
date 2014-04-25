@@ -191,7 +191,7 @@
 		{
 			var levelOK:Boolean = false;
 			
-			enemyPicker = (Math.ceil(Math.random() * (maxNum - minNum)) + minNum);
+			enemyPicker = (Math.round(Math.random() * (maxNum - minNum)) + minNum);
 			trace(enemyPicker);
 			
 			/*while(levelOK == false)

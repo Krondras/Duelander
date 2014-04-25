@@ -21,7 +21,7 @@
 		public var enemyHitbox:MovieClip;
 		public var enemySwordHitbox:MovieClip;
 		public var enemyGuardHitbox:MovieClip;
-		
+		public var blood:MovieClip;
 		public var keys:Object = new Object(); //Creates an object called keys that will be used to read what keys are being pressed.
 		
 		public var mainStage:Stage;
@@ -127,7 +127,9 @@
 			enemyHitbox = enemy.enemyIcon.hitbox;
 			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
 			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
-				
+			blood = new Blood();
+			blood.width = 20;
+			blood.height = 20;
 			gameBackground = new KnightBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
@@ -250,7 +252,10 @@
 				if(playerSwordHitbox.hitTestObject(enemyHitbox) && !enemyWasHit && playerAttack) 
 				{
 						trace("Enemy killed")
-						
+						playStage.addChild(blood)
+						blood.x = enemyHitbox.x+ 250;
+						blood.y = enemyHitbox.y+ 200;
+						blood.play();
 						sfxSoundChannel = knightKO.play();
 						if(playerType == "Duelist")
 							sfxSoundChannel = duelistCut.play();
@@ -268,6 +273,7 @@
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
 						winTimer.start();
+						player.isMoving = false;
 				}
 				
 				if(enemySwordHitbox.hitTestObject(playerGuardHitbox) && player.playerBlock && enemy.enemyAttack)
@@ -279,7 +285,10 @@
 				{
 						playerWasHit = true;
 						trace("Player died");
-						
+						playStage.addChild(blood)
+						blood.x = playerHitbox.x+ 200;
+						blood.y = playerHitbox.y+ 250;
+						blood.play();
 						sfxSoundChannel = knightCut.play();
 						if(playerType == "Duelist")
 							sfxSoundChannel = duelistKO.play();
@@ -296,6 +305,7 @@
 						playerActionTimer.stop();
 						enemyActionTimer.stop();
 						loseTimer.start();
+						player.isMoving = false;
 				}
 				
 				if(enemyActionTimer.currentCount >= 10)
@@ -515,6 +525,7 @@
 				trace("Player died");
 				gamePlaying = false;
 				gameTimer.stop();
+				player.isMoving = false;
 				countdownTimer.stop();
 				playerActionTimer.stop();
 				enemyActionTimer.stop();
