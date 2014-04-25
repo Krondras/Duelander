@@ -23,7 +23,8 @@
  		public var numEnemiesKilled:int; //Remembers the number of enemies killed.
 		
 		public var enemyPicker:int;
-		
+		public var maxNum = 3;
+		public var minNum = 0;
 		public function DocumentClass() //Initializes the title screen when you first open the game.
 		{
 			loadMainMenu();
@@ -190,7 +191,8 @@
 		{
 			var levelOK:Boolean = false;
 			
-			enemyPicker = Math.random()*3;
+			enemyPicker = (Math.ceil(Math.random() * (maxNum - minNum)) + minNum);
+			trace(enemyPicker);
 			
 			/*while(levelOK == false)
 			{

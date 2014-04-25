@@ -122,13 +122,13 @@
 				playerGuardHitbox = player.playerIcon.guardHitbox;
 			}
 			
-			enemy = new Enemy(new KnightIcon());
-			enemy.enemyType = "Knight";
+			enemy = new Enemy(new DuelistIcon());
+			enemy.enemyType = "Duelist";
 			enemyHitbox = enemy.enemyIcon.hitbox;
 			enemySwordHitbox = enemy.enemyIcon.attackHitbox;
 			enemyGuardHitbox = enemy.enemyIcon.guardHitbox;
 				
-			gameBackground = new KnightBackground();
+			gameBackground = new DuelistBackground();
 			
 			playStage.addChild(gameBackground);//Index 1
 			
