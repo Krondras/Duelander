@@ -149,9 +149,12 @@
 			timeTextFormat.font = "Arial";
 			timeTextFormat.align = "center";
 			timeTextFormat.size = 24;
-			timeTextFormat.color = 0xffffff;
+			timeTextFormat.color = 0xff0000;
 			gameTimeField.defaultTextFormat = timeTextFormat;
-			
+			pauseText.defaultTextFormat = timeTextFormat;
+			pauseText.x = 225;
+			pauseText.y = 200;
+			playStage.addChild(pauseText);
 			playStage.addChild(gameTimeField); //Index 6
 			
 			readyText.gotoAndStop(1);
@@ -350,7 +353,7 @@
 				player.Block(keys);
 			}
 			
-			if (keys[80] && !isPaused)
+			if (keys[80] && gamePlaying && !isPaused)
 			{
 				gameTimer.stop();
 				
@@ -358,7 +361,7 @@
 				isPaused = true;
 			}
 			
-			else if (keys[80] && isPaused)
+			else if (keys[80] && gamePlaying && isPaused)
 			{
 				gameTimer.start();
 				pauseText.text = "";

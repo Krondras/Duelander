@@ -53,7 +53,6 @@
 			
 			continueBtn.addEventListener( MouseEvent.CLICK, onClickContinue);
 			mainMenuBtn.addEventListener( MouseEvent.CLICK, onClickMenu);
-			submitScoreBtn.addEventListener( MouseEvent.CLICK, onClickSubmit);
 		}
  
 		public function onClickContinue( mouseEvent:MouseEvent ):void 

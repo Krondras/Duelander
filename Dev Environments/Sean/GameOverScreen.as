@@ -53,7 +53,7 @@
 			
 			retryBtn.addEventListener( MouseEvent.CLICK, onClickRestart ); //Submits a restart query to document class
 			mainMenuBtn.addEventListener(MouseEvent.CLICK, onClickMenu); //Submits a main menu query to document class
-			submitScoreBtn.addEventListener( MouseEvent.CLICK, onClickSubmit) //Submits a score submission query to document class
+			//submitScoreBtn.addEventListener( MouseEvent.CLICK, onClickSubmit) //Submits a score submission query to document class
 		}
  
 		public function onClickRestart( mouseEvent:MouseEvent ):void 
